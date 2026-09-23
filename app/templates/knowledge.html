@@ -1,0 +1,311 @@
+{% extends "base.html" %}
+
+{% block title %}校史知识库{% endblock %}
+{% block page_heading %}校史知识库{% endblock %}
+{% block page_crumb %}南开校史 · 知识展厅{% endblock %}
+
+{# ?reveal=1 → 放映模式：跳过入场动效、卡片全部翻开，便于投屏讲解 #}
+{% block body_class %}{% if reveal_all %}is-present{% endif %}{% endblock %}
+
+{% block content %}
+
+{# ============================================================
+   0. 开场：一句话说明
+   ============================================================ #}
+<section class="kb-hero reveal">
+  <div class="kb-hero-text">
+    <h2 class="kb-hero-title">{{ data.meta.title or '南开校史知识库' }}</h2>
+    <p class="kb-hero-lead">{{ data.meta.lead }}</p>
+    {% if data.meta.note %}
+    <p class="kb-hero-note">{{ data.meta.note }}</p>
+    {% endif %}
+  </div>
+  <div class="kb-hero-badge" aria-hidden="true">
+    <span class="kb-hero-badge-year">{{ data.meta.foundYear or 1919 }}</span>
+    <span class="kb-hero-badge-line"></span>
+    <span class="kb-hero-badge-text">建校</span>
+  </div>
+</section>
+
+{# 曾经这里有一版八格「数字看板」（建校年份 / 建校至今 / 首期学生 / 知识主题 /
+   知识卡片 / 校史节点 / 人物档案 / 讲义切片）。它把八个不同量纲的数字并排放在
+   一起，读者要自己判断哪个值得看，反而稀释了开场的重点；章节本身在下方各有
+   标题与计数，这里的重复也就没有必要。已整块移除，对应 CSS 与 service 一并清理。 #}
+
+{# ============================================================
+   1. 校史时间轴
+   ============================================================ #}
+<section class="kb-section reveal" id="timeline">
+  <header class="kb-section-head">
+    <span class="kb-index">01</span>
+    <div>
+      <h2>校史时间轴</h2>
+      <p>从 1904 年的私立中学堂，到 2019 年的百年校庆 —— 沿 {{ data.timeline|length }} 个节点走过南开。</p>
+    </div>
+  </header>
+
+  <ol class="timeline">
+    {% for node in data.timeline %}
+    <li class="tl-node tl-node-{{ node.era }} reveal" style="--i: {{ loop.index0 }}">
+      <div class="tl-year">{{ node.year }}</div>
+      <div class="tl-axis" aria-hidden="true">
+        <span class="tl-dot"></span>
+      </div>
+      <article class="tl-card">
+        {# 这里曾有一枚「创校 / 抗战 / 复校」的两字小标签。它把节点的分期写在最
+           显眼的位置，可读者真正要读的是「哪一年、发生了什么」—— 分期信息改由
+           轴线圆点与卡片左侧色条承载，同样的分组，少一行字。 #}
+        <time class="tl-date">{{ node.date }}</time>
+        <h3 class="tl-title">{{ node.title }}</h3>
+        <p class="tl-summary">{{ node.summary }}</p>
+        <details class="tl-more">
+          <summary>展开细节</summary>
+          <p>{{ node.detail }}</p>
+          <div class="tl-source">出处：{{ node.source }}</div>
+        </details>
+      </article>
+    </li>
+    {% endfor %}
+  </ol>
+</section>
+
+{# ============================================================
+   2. 人物档案（翻转卡片墙）
+   ============================================================ #}
+<section class="kb-section" id="people">
+  <header class="kb-section-head reveal">
+    <span class="kb-index">02</span>
+    <div>
+      <h2>人物档案</h2>
+      <p>创办人、杰出校友与学术名家 —— 点击卡片翻面，看他们的故事。共 {{ data.people|length }} 位。</p>
+    </div>
+  </header>
+
+  <div class="people-wall">
+    {% for person in data.people %}
+    <article class="flip person-card reveal{% if reveal_all %} is-flipped{% endif %}" style="--i: {{ loop.index0 }}">
+      <div class="flip-inner">
+        {# 正面：牛皮纸档案袋 —— 顶部标签、装订线、字段行。
+           不放姓氏小章：姓氏与姓名本身就是重复信息，8 位里还有两位同姓
+           （张伯苓 / 张彭春），印上去既区分不了人，又和姓名的视线打架。 #}
+        <div class="flip-face flip-front">
+          <span class="dossier-tab" aria-hidden="true">人物档案</span>
+          <span class="dossier-holes" aria-hidden="true"></span>
+
+          <h3 class="person-name">{{ person.name }}</h3>
+          <div class="person-role">{{ person.role }}</div>
+
+          <dl class="person-fields">
+            <div class="person-field">
+              <dt>时期</dt>
+              <dd>{{ person.era }}</dd>
+            </div>
+            <div class="person-field">
+              <dt>标签</dt>
+              <dd class="person-tags">
+                {% for tag in person.tags %}<span class="tag">{{ tag }}</span>{% endfor %}
+              </dd>
+            </div>
+          </dl>
+
+          <button type="button" class="flip-btn" data-flip-toggle aria-label="查看 {{ person.name }} 的档案">
+            <span class="flip-btn-text">翻开档案</span>
+          </button>
+        </div>
+
+        {# 背面：信笺 —— 左侧朱红边线。
+           卡片高度是固定的（见 .person-card 的 --person-h），档案最长的「张伯苓」
+           会超出卡片高度，所以这块允许纵向滚动；.flip-more 只在真的溢出时显示，
+           由 app.js 的 initFlipOverflow() 挂类控制，没溢出的卡不会谎报「可滚动」。 #}
+        <div class="flip-face flip-back">
+          <div class="flip-back-scroll letter">
+            <div class="person-back-head">
+              <span class="person-back-name">{{ person.name }}</span>
+              <span class="person-era">{{ person.era }}</span>
+            </div>
+            <p class="person-bio">{{ person.bio }}</p>
+            <ul class="person-points">
+              {% for point in person.highlights %}<li>{{ point }}</li>{% endfor %}
+            </ul>
+            <div class="flip-source">{{ person.source }}</div>
+          </div>
+          <span class="flip-more" aria-hidden="true">余下内容可滚动查看</span>
+          <button type="button" class="flip-btn" data-flip-toggle aria-label="收起 {{ person.name }} 的档案">
+            <span class="flip-btn-text">收起</span>
+          </button>
+        </div>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+
+{# ============================================================
+   3. 文化标识（印章铭牌）
+   ============================================================ #}
+<section class="kb-section" id="emblems">
+  <header class="kb-section-head reveal">
+    <span class="kb-index">03</span>
+    <div>
+      <h2>文化标识</h2>
+      <p>校训、校歌、校名、校徽与建筑 —— 把校史符号认全，这一分类的题就不会答错。</p>
+    </div>
+  </header>
+
+  <div class="emblem-grid">
+    {% for item in data.emblems %}
+    <article class="emblem-card reveal" style="--i: {{ loop.index0 }}">
+      <div class="emblem-seal">{{ item.icon }}</div>
+      <div class="emblem-body">
+        <div class="emblem-name">{{ item.name }}</div>
+        <div class="emblem-value">{{ item.value }}</div>
+        <p class="emblem-note">{{ item.note }}</p>
+        <div class="emblem-source">{{ item.source }}</div>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+
+{# ============================================================
+   4. 易混淆辨析
+   ============================================================ #}
+<section class="kb-section" id="contrasts">
+  <header class="kb-section-head reveal">
+    <span class="kb-index">04</span>
+    <div>
+      <h2>易混淆辨析</h2>
+      <p>这几组最容易记串。金色高亮的是南开自己的答案。</p>
+    </div>
+  </header>
+
+  <div class="contrast-grid">
+    {% for group in data.contrasts %}
+    <article class="contrast-card reveal" style="--i: {{ loop.index0 }}">
+      <h3 class="contrast-topic">{{ group.topic }}</h3>
+      <ul class="contrast-list">
+        {% for row in group['items'] %}
+        <li class="contrast-row {% if row.isNankai %}is-nankai{% endif %}">
+          <span class="contrast-school">{{ row.school }}</span>
+          <span class="contrast-value">{{ row.value }}</span>
+        </li>
+        {% endfor %}
+      </ul>
+      <p class="contrast-note">{{ group.note }}</p>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+
+{# ============================================================
+   5. 知识卡片（主题切换 + 翻卡）
+   ============================================================ #}
+<section class="kb-section" id="cards">
+  <header class="kb-section-head reveal">
+    <span class="kb-index">05</span>
+    <div>
+      <h2>知识卡片</h2>
+      <p>题库里的 {{ data.cardTotal }} 道题，正面给线索、背面给答案与出处。点击卡片翻面自测。</p>
+    </div>
+  </header>
+
+  <div class="kb-tabs reveal" role="tablist" aria-label="知识主题">
+    {% for theme in data.themes %}
+    <button type="button"
+            class="kb-tab{% if loop.first %} is-active{% endif %}"
+            role="tab"
+            data-kb-tab="{{ theme.key }}"
+            aria-selected="{{ 'true' if loop.first else 'false' }}">
+      <span class="kb-tab-label">{{ theme.label }}</span>
+      <span class="kb-tab-count">{{ theme.count }}</span>
+    </button>
+    {% endfor %}
+  </div>
+
+  <div class="kb-tools reveal" data-tour="kb-tools">
+    <button type="button" class="btn btn-ghost btn-sm" data-kb-shuffle>随机洗牌</button>
+    <button type="button" class="btn btn-ghost btn-sm" data-kb-reveal-all>全部翻面</button>
+    <button type="button" class="btn btn-ghost btn-sm" data-kb-hide-all>全部收起</button>
+    <span class="kb-tools-hint" data-kb-progress aria-live="polite"></span>
+  </div>
+
+  {% for theme in data.themes %}
+  <section class="kb-panel{% if loop.first %} is-active{% endif %}"
+           data-kb-panel="{{ theme.key }}"
+           role="tabpanel"
+           aria-label="{{ theme.label }}">
+    <div class="theme-lead reveal">
+      <p>{{ theme.lead }}</p>
+      <div class="theme-meta">
+        <span class="theme-chip theme-chip-easy">简单 {{ theme.easyCount }}</span>
+        <span class="theme-chip theme-chip-medium">中等 {{ theme.mediumCount }}</span>
+        <span class="theme-chip theme-chip-hard">困难 {{ theme.hardCount }}</span>
+        <span class="theme-chip theme-chip-source">讲义：{{ theme.source }}</span>
+      </div>
+      {% if theme.keywords %}
+      <div class="theme-keywords">
+        {% for word in theme.keywords %}<span class="keyword">{{ word }}</span>{% endfor %}
+      </div>
+      {% endif %}
+    </div>
+
+    {% if theme.cards %}
+    <div class="card-grid">
+      {% for card in theme.cards %}
+      <article class="flip quiz-card reveal{% if reveal_all %} is-flipped{% endif %}" style="--i: {{ loop.index0 % 10 }}">
+        <div class="flip-inner">
+          <div class="flip-face flip-front">
+            <div class="card-top">
+              <span class="badge badge-{{ card.difficulty|lower }}">{{ card.difficultyLabel }}</span>
+              <span class="card-src">{{ card.sourceTitle }}</span>
+            </div>
+            <p class="card-prompt">{{ card.prompt }}</p>
+            <div class="card-foot">
+              <span class="card-section">{{ card.sourceSection }}</span>
+              <button type="button" class="flip-btn" data-flip-toggle aria-label="查看本题答案">
+                <span class="flip-btn-text">看答案</span>
+              </button>
+            </div>
+          </div>
+          <div class="flip-face flip-back">
+            <div class="flip-back-scroll">
+              <div class="card-answer">
+                <span class="card-answer-key">{{ card.answerKey }}</span>
+                <span class="card-answer-text">{{ card.answerText }}</span>
+              </div>
+              <p class="card-expl">{{ card.explanation }}</p>
+              <div class="flip-source">{{ card.source }}</div>
+            </div>
+            <div class="card-foot">
+              <span class="card-section">出处可查</span>
+              <button type="button" class="flip-btn" data-flip-toggle aria-label="返回题干">
+                <span class="flip-btn-text">返回</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-note">
+      <p class="empty-title">该主题暂无启用中的题目</p>
+      <p class="hint-text">管理员在「题库管理」中启用题目后，这里会自动出现对应卡片。</p>
+    </div>
+    {% endif %}
+  </section>
+  {% endfor %}
+</section>
+
+{# ============================================================
+   6. 收尾：回到题目
+   ============================================================ #}
+<section class="kb-cta reveal">
+  <div>
+    <h2>看完了，去验一验</h2>
+    <p>这一页的知识点与题库标准答案同源。回到考场，用一局竞答检验印象。</p>
+  </div>
+  <a class="btn btn-gold" href="/dashboard">开始一局竞答</a>
+</section>
+
+{% endblock %}

@@ -1,0 +1,30 @@
+[project]
+name = "quizmaster"
+version = "1.0.0"
+description = "QuizMaster · 南开校史在线知识竞答系统（第 17 题）"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.32.0",
+    "jinja2>=3.1.4",
+    "python-multipart>=0.0.12",
+    "httpx>=0.27.2",
+    "sqlalchemy>=2.0.36",
+    "itsdangerous>=2.2.0",
+]
+
+[tool.uv]
+package = false
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    # 只给交付件构建用（docs/*.md -> 开发设计文档.pdf / AI辅助对话记录.pdf）。
+    # 放在 dev 组里：uv sync 会装上，但应用运行时一行都不 import。
+    "markdown>=3.6",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+pythonpath = ["."]

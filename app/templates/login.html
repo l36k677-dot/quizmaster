@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+{% include "_head.html" %}
+  <title>登录 · {{ app_name }} 南开校史知识竞答</title>
+</head>
+<body class="is-auth">
+{% import "_icons.html" as icons %}
+{% import "_mascot.html" as mascot %}
+<div class="auth-wrap">
+
+  {# 左栏：插画 + 校训 + 三个可核验的数字。文案与 data/seed/knowledge.json 同源，
+     不另创说法，避免登录页与知识库对同一史实给出两种表述。
+     配图改为手绘插画后，图注只描述画面本身，不再指认具体建筑 ——
+     写实照片上可以「认得出是哪栋楼」，风格化插画上不行。 #}
+  <aside class="auth-aside">
+    <figure class="auth-figure">
+      <img src="/static/img/hero-library.webp"
+           alt="手绘水彩风格的图书馆阅览室：拱形长窗、满墙书架与几盏绿色台灯" />
+      <figcaption>手绘插画 · 阅览室的午后</figcaption>
+    </figure>
+
+    <blockquote class="auth-motto">
+      允公允能　日新月异
+      <small>南 开 校 训 · 张 伯 苓 提 出</small>
+    </blockquote>
+
+    <dl class="auth-facts">
+      <div>
+        <dt>南开大学创办</dt>
+        <dd>1919<em>年</em></dd>
+      </div>
+      <div>
+        <dt>南开学校起点</dt>
+        <dd>1904<em>年</em></dd>
+      </div>
+      <div>
+        <dt>校庆日</dt>
+        <dd>10<em>月</em>17<em>日</em></dd>
+      </div>
+    </dl>
+  </aside>
+
+  {# 右栏：纯表单。宽度收窄到 400px 以内，输入区更聚焦。 #}
+  <main class="auth-main">
+    <div class="auth-card">
+      <div class="auth-brand">
+        <div class="crest">{{ icons.brand_mark() }}</div>
+        <h1>QuizMaster</h1>
+        <p>南 开 校 史 知 识 竞 答</p>
+      </div>
+
+      <div class="auth-tabs" role="tablist" aria-label="登录或注册">
+        <button class="auth-tab active" type="button" role="tab"
+                aria-selected="true" data-mode="login">登录</button>
+        <button class="auth-tab" type="button" role="tab"
+                aria-selected="false" data-mode="register">注册</button>
+      </div>
+
+      <form id="auth-form" autocomplete="off" novalidate>
+        <div class="field">
+          <label for="username">用户名</label>
+          <input id="username" name="username" type="text" placeholder="请输入用户名"
+                 autocomplete="username" required />
+        </div>
+        <div class="field">
+          <label for="password">密码</label>
+          <input id="password" name="password" type="password" placeholder="请输入密码"
+                 autocomplete="current-password" required />
+        </div>
+        <div class="field" id="display-name-field" style="display:none">
+          <label for="displayName">显示名称（可选）</label>
+          <input id="displayName" name="displayName" type="text" placeholder="留空则显示用户名"
+                 autocomplete="nickname" maxlength="20" />
+        </div>
+        <div class="error-text" id="auth-error" role="alert" aria-live="assertive"></div>
+        <button class="btn btn-gold btn-block" type="submit" id="auth-submit">登录</button>
+      </form>
+
+      {# 登录页先让荷宝露个面：它是本站的导览形象，顺带说明登录后
+         会有可跳过的新手指引 —— 免得用户被开场指引「突袭」时一脸茫然。 #}
+      <p class="auth-note">
+        <span class="auth-mascot">{{ mascot.mascot('wave') }}</span>
+        <span>首次使用请先注册；成绩存在本机数据库。<br />登录后荷宝会带你逛一圈，随时可以跳过。</span>
+      </p>
+    </div>
+  </main>
+</div>
+
+<script src="/static/js/app.js"></script>
+<script>
+  const NEXT_URL = {{ next_url | tojson }};
+  let mode = 'login';
+
+  document.querySelectorAll('.auth-tab').forEach((tab) => {
+    tab.addEventListener('click', () => {
+      mode = tab.dataset.mode;
+      document.querySelectorAll('.auth-tab').forEach((t) => {
+        const on = t === tab;
+        t.classList.toggle('active', on);
+        t.setAttribute('aria-selected', on ? 'true' : 'false');
+      });
+      document.getElementById('display-name-field').style.display = mode === 'register' ? 'block' : 'none';
+      document.getElementById('auth-submit').textContent = mode === 'register' ? '注册并登录' : '登录';
+      document.getElementById('auth-error').textContent = '';
+    });
+  });
+
+  document.getElementById('auth-form').addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const errorBox = document.getElementById('auth-error');
+    const submit = document.getElementById('auth-submit');
+    errorBox.textContent = '';
+    submit.disabled = true;
+
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value;
+    const displayName = document.getElementById('displayName').value.trim();
+
+    try {
+      if (mode === 'login') {
+        await API.post('/api/auth/login', { username, password });
+      } else {
+        await API.post('/api/auth/register', { username, password, displayName: displayName || null });
+      }
+      window.location.href = NEXT_URL || '/dashboard';
+    } catch (err) {
+      errorBox.textContent = err.message || '操作失败';
+      // role="alert" 会播报错误；这里只把提交按钮恢复可用，不抢焦点，
+      // 否则键盘用户正在输入的字段会被打断。
+      submit.disabled = false;
+    }
+  });
+</script>
+</body>
+</html>

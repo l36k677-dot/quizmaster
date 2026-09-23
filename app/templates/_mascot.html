@@ -1,0 +1,169 @@
+{# 荷宝：本项目的导览虚拟形象（原创自绘）
+   ------------------------------------------------------------
+   来历与授权口径（重要，勿删）：
+     「荷宝」的形象原型是**南开大学官微学生团队自主设计**的原创 IP，
+     大名叫「紫菡」（南开紫的「紫」+ 红菏菡萏的「菡」），昵称「荷宝」，
+     2024 年建校 105 周年时随官方表情包上线（澎湃新闻《气氛组就位！
+     「荷宝」上线为南开庆生》，2024-10）。原型著作权归原作者所有。
+
+     本文件里的图形**不是**官方素材的描摹或矢量化，而是为本站另起一版
+     自绘形象：荷叶帽改成「未开的荷花苞 + 两片不对称侧叶」，颈间是一圈
+     荷叶圆领，胸前的主体纹样由粉色荷花换成与本站品牌徽记同源的**银杏叶**，
+     配色取自本项目的纸感水彩调色板（见 app.css :root）。用途是功能性的
+     导览角色，署名与出处见 _tour.html 的 .tour-credit 与 README。
+
+   绘制约定：
+     1. **背景透明** —— 只有角色本身的形状，没有任何铺满画布的不透明底
+        （全文件不出现 <rect>，冒烟测试断言这一点）；
+     2. 全部内联 SVG，不引外部资源，不新增静态图片文件；
+     3. 姿势只有「手臂 / 眼睛 / 嘴 / 点缀」四处分叉，身子与荷叶帽复用，
+        免得四个姿势各画一遍、改一处要改四遍；
+     4. 尺寸走 CSS（width:100% + height:auto），宏本身不写死像素宽高；
+     5. 五官集中在 y=86 附近、颈领在 y=60..67 —— 第一版把荷叶领画成大片
+        前襟，五官被挤在帽子下面看不见了，所以领子收成一圈圆领、
+        把脸整体下移，34px 下也能认出是张脸。
+
+   四个姿势：
+     wave  招手（开场问候）
+     point 指向（讲解某个功能区，手臂伸向右侧目标）
+     think 托腮思考（用于「先去补课」这类步骤）
+     cheer 欢呼（收尾、也可以用在空状态）
+#}
+
+{% macro mascot(pose='wave') -%}
+{%- set eye_mode = 'open' if pose in ('wave', 'point') else ('think' if pose == 'think' else 'happy') -%}
+{%- set mouth = 'open' if pose == 'cheer' else ('small' if pose == 'think' else 'smile') -%}
+<svg class="mascot-svg" data-pose="{{ pose }}" viewBox="0 0 120 156"
+     xmlns="http://www.w3.org/2000/svg" role="presentation" aria-hidden="true" focusable="false">
+  {# 落地投影：极淡，只为让角色不在纸面上「飘」，不是背景色块 #}
+  <ellipse cx="60" cy="146" rx="28" ry="5.6" fill="#2c3742" opacity="0.09" />
+
+  {# 小脚 #}
+  <ellipse cx="46" cy="134" rx="10" ry="6.4" fill="#fdf8ee" stroke="#cfc3ac" stroke-width="1.8" />
+  <ellipse cx="74" cy="134" rx="10" ry="6.4" fill="#fdf8ee" stroke="#cfc3ac" stroke-width="1.8" />
+
+  {# 身体 #}
+  <path d="M60 40 C 38 40 25 58 25 84 C 25 112 40 132 60 132 C 80 132 95 112 95 84 C 95 58 82 40 60 40 Z"
+        fill="#fffaf0" stroke="#cfc3ac" stroke-width="2" />
+
+  {# 双臂：画在身体之后。
+     第一版画在身体之前、肩点又落在轮廓里，结果整条手臂被身体盖住，
+     只剩一只圆手浮在头侧 —— 所以肩点改到轮廓线上（y=96 处左右边界约
+     x=26 / x=94），手臂整段都在剪影之外，看得出是「手举起来」而不是
+     「飘着的手套」。只有托腮那只手刻意压在身体上（那正是托腮的样子）。 #}
+  {% if pose == 'cheer' %}
+  <g class="mascot-arm">
+    <path d="M26 98 C 16 90 15 76 19 66" fill="none" stroke="#cfc3ac" stroke-width="12" stroke-linecap="round" />
+    <path d="M26 98 C 16 90 15 76 19 66" fill="none" stroke="#fffaf0" stroke-width="9" stroke-linecap="round" />
+    <circle cx="20" cy="64" r="7.6" fill="#cfc3ac" /><circle cx="20" cy="64" r="6.4" fill="#fffaf0" />
+  </g>
+  {% elif pose == 'think' %}
+  <g class="mascot-arm">
+    <path d="M26 96 C 21 90 26 84 33 82" fill="none" stroke="#cfc3ac" stroke-width="12" stroke-linecap="round" />
+    <path d="M26 96 C 21 90 26 84 33 82" fill="none" stroke="#fffaf0" stroke-width="9" stroke-linecap="round" />
+    <circle cx="35" cy="80" r="7" fill="#cfc3ac" /><circle cx="35" cy="80" r="5.8" fill="#fffaf0" />
+  </g>
+  {% else %}
+  <g class="mascot-arm">
+    <path d="M26 98 C 20 102 18 108 18 113" fill="none" stroke="#cfc3ac" stroke-width="12" stroke-linecap="round" />
+    <path d="M26 98 C 20 102 18 108 18 113" fill="none" stroke="#fffaf0" stroke-width="9" stroke-linecap="round" />
+    <circle cx="18" cy="115" r="6.6" fill="#cfc3ac" /><circle cx="18" cy="115" r="5.5" fill="#fffaf0" />
+  </g>
+  {% endif %}
+
+  {% if pose == 'wave' %}
+  <g class="mascot-arm">
+    <path d="M94 98 C 104 90 105 76 101 68" fill="none" stroke="#cfc3ac" stroke-width="12" stroke-linecap="round" />
+    <path d="M94 98 C 104 90 105 76 101 68" fill="none" stroke="#fffaf0" stroke-width="9" stroke-linecap="round" />
+    <circle cx="102" cy="64" r="7.6" fill="#cfc3ac" /><circle cx="102" cy="64" r="6.4" fill="#fffaf0" />
+  </g>
+  {% elif pose == 'point' %}
+  <g class="mascot-arm">
+    <path d="M94 98 C 104 98 108 95 110 93" fill="none" stroke="#cfc3ac" stroke-width="12" stroke-linecap="round" />
+    <path d="M94 98 C 104 98 108 95 110 93" fill="none" stroke="#fffaf0" stroke-width="9" stroke-linecap="round" />
+    <circle cx="112" cy="92" r="7" fill="#cfc3ac" /><circle cx="112" cy="92" r="5.9" fill="#fffaf0" />
+  </g>
+  {% elif pose == 'cheer' %}
+  <g class="mascot-arm">
+    <path d="M94 98 C 104 90 105 76 101 66" fill="none" stroke="#cfc3ac" stroke-width="12" stroke-linecap="round" />
+    <path d="M94 98 C 104 90 105 76 101 66" fill="none" stroke="#fffaf0" stroke-width="9" stroke-linecap="round" />
+    <circle cx="100" cy="64" r="7.6" fill="#cfc3ac" /><circle cx="100" cy="64" r="6.4" fill="#fffaf0" />
+  </g>
+  {% else %}
+  <g class="mascot-arm">
+    <path d="M94 98 C 100 102 102 108 102 113" fill="none" stroke="#cfc3ac" stroke-width="12" stroke-linecap="round" />
+    <path d="M94 98 C 100 102 102 108 102 113" fill="none" stroke="#fffaf0" stroke-width="9" stroke-linecap="round" />
+    <circle cx="102" cy="115" r="6.6" fill="#cfc3ac" /><circle cx="102" cy="115" r="5.5" fill="#fffaf0" />
+  </g>
+  {% endif %}
+
+  {# 荷叶圆领：一圈叶片沿弧线排开，不是大片前襟（前襟会盖住五官） #}
+  <g class="mascot-collar">
+    <ellipse cx="30" cy="60" rx="6.8" ry="3.9" fill="#7fb08a" stroke="#4f8a6b" stroke-width="1.4" transform="rotate(-25 30 60)" />
+    <ellipse cx="40" cy="63.9" rx="6.8" ry="3.9" fill="#7fb08a" stroke="#4f8a6b" stroke-width="1.4" transform="rotate(-17 40 63.9)" />
+    <ellipse cx="50" cy="66.2" rx="6.8" ry="3.9" fill="#7fb08a" stroke="#4f8a6b" stroke-width="1.4" transform="rotate(-9 50 66.2)" />
+    <ellipse cx="60" cy="67" rx="6.8" ry="3.9" fill="#7fb08a" stroke="#4f8a6b" stroke-width="1.4" />
+    <ellipse cx="70" cy="66.2" rx="6.8" ry="3.9" fill="#7fb08a" stroke="#4f8a6b" stroke-width="1.4" transform="rotate(9 70 66.2)" />
+    <ellipse cx="80" cy="63.9" rx="6.8" ry="3.9" fill="#7fb08a" stroke="#4f8a6b" stroke-width="1.4" transform="rotate(17 80 63.9)" />
+    <ellipse cx="90" cy="60" rx="6.8" ry="3.9" fill="#7fb08a" stroke="#4f8a6b" stroke-width="1.4" transform="rotate(25 90 60)" />
+  </g>
+
+  {# 脸：眼睛 / 腮红 / 嘴（画在领子之后，确保五官永远在最上层） #}
+  {% if eye_mode == 'open' %}
+  <circle cx="47" cy="84" r="6.4" fill="#2c3742" />
+  <circle cx="73" cy="84" r="6.4" fill="#2c3742" />
+  <circle cx="49.4" cy="81.4" r="2.3" fill="#ffffff" />
+  <circle cx="75.4" cy="81.4" r="2.3" fill="#ffffff" />
+  <circle cx="45" cy="86.8" r="1.2" fill="#ffffff" opacity="0.75" />
+  <circle cx="71" cy="86.8" r="1.2" fill="#ffffff" opacity="0.75" />
+  {% elif eye_mode == 'think' %}
+  <path d="M41 82 C 44.6 78.8 49.4 78.8 53 82" fill="none" stroke="#2c3742" stroke-width="2.4" stroke-linecap="round" />
+  <path d="M67 82 C 70.6 78.8 75.4 78.8 79 82" fill="none" stroke="#2c3742" stroke-width="2.4" stroke-linecap="round" />
+  <path d="M42 73 C 45 71 48 71 51 73" fill="none" stroke="#b9ac95" stroke-width="1.8" stroke-linecap="round" />
+  <path d="M69 73 C 72 71 75 71 78 73" fill="none" stroke="#b9ac95" stroke-width="1.8" stroke-linecap="round" />
+  {% else %}
+  <path d="M41 86 C 45 80 49 80 53 86" fill="none" stroke="#2c3742" stroke-width="2.6" stroke-linecap="round" />
+  <path d="M67 86 C 71 80 75 80 79 86" fill="none" stroke="#2c3742" stroke-width="2.6" stroke-linecap="round" />
+  {% endif %}
+  <ellipse cx="35" cy="92" rx="6.4" ry="4.1" fill="#eaa8a0" opacity="0.45" />
+  <ellipse cx="85" cy="92" rx="6.4" ry="4.1" fill="#eaa8a0" opacity="0.45" />
+  {% if mouth == 'open' %}
+  <path d="M53 95 C 56 104 64 104 67 95 C 62 93 58 93 53 95 Z" fill="#cf8a86" stroke="#a86d6a" stroke-width="1.2" stroke-linejoin="round" />
+  {% elif mouth == 'small' %}
+  <path d="M56 97 Q 60 100 64 97" fill="none" stroke="#2c3742" stroke-width="1.8" stroke-linecap="round" />
+  {% else %}
+  <path d="M54 96 Q 60 103 66 96" fill="none" stroke="#2c3742" stroke-width="1.9" stroke-linecap="round" />
+  {% endif %}
+
+  {# 银杏叶胸章：与侧栏品牌徽记（书 + 银杏）同源，表明这是项目自己的导览角色。
+     与嘴之间留 6px 空白，免得两处并成一团。 #}
+  <path d="M60 126 C 52 123 48 115 49 109 C 53 112 57 116 60 120 C 63 116 67 112 71 109 C 72 115 68 123 60 126 Z"
+        fill="#c99a3f" stroke="#a97f2c" stroke-width="1.3" stroke-linejoin="round" />
+  <path d="M60 126 v5" fill="none" stroke="#a97f2c" stroke-width="1.6" stroke-linecap="round" />
+
+  {# 荷叶帽：两片不对称侧叶 + 中间未开的荷花苞 #}
+  <path d="M27 41 C 19 37 13 39 11 45 C 17 49 24 47 28 45 Z" fill="#8fbb98" stroke="#4f8a6b" stroke-width="1.6" stroke-linejoin="round" />
+  <path d="M93 41 C 101 37 107 39 109 45 C 103 49 96 47 92 45 Z" fill="#8fbb98" stroke="#4f8a6b" stroke-width="1.6" stroke-linejoin="round" />
+  <path d="M60 31 C 44 25 30 31 24 43 C 36 49 48 43 60 39 C 72 43 84 49 96 43 C 90 31 76 25 60 31 Z"
+        fill="#7fb08a" stroke="#4f8a6b" stroke-width="1.8" stroke-linejoin="round" />
+  <path d="M60 31 C 60 35 60 37 60 39" fill="none" stroke="#cfe6d2" stroke-width="1.6" stroke-linecap="round" />
+  <path d="M60 30 C 52 25 49 16 51 8 C 56 12 59 20 60 30 Z" fill="#f7dbe3" stroke="#dda7b8" stroke-width="1.4" stroke-linejoin="round" />
+  <path d="M60 30 C 68 25 71 16 69 8 C 64 12 61 20 60 30 Z" fill="#f7dbe3" stroke="#dda7b8" stroke-width="1.4" stroke-linejoin="round" />
+  <path d="M60 30 C 55 22 56 12 60 4 C 64 12 65 22 60 30 Z" fill="#f3cbd6" stroke="#dda7b8" stroke-width="1.6" stroke-linejoin="round" />
+
+  {# 姿势点缀：都在角色周围，不构成任何方形底色 #}
+  {% if pose == 'wave' %}
+  <path d="M105 59 C 109 56 112 57 115 60" fill="none" stroke="#c9a961" stroke-width="2" stroke-linecap="round" />
+  <path d="M103 71 C 107 68 111 68 114 71" fill="none" stroke="#c9a961" stroke-width="2" stroke-linecap="round" />
+  {% elif pose == 'think' %}
+  <circle cx="99" cy="56" r="2.4" fill="#c9a961" opacity="0.75" />
+  <circle cx="106" cy="51" r="3" fill="#c9a961" opacity="0.85" />
+  <circle cx="114" cy="45" r="2.1" fill="#c9a961" opacity="0.6" />
+  {% elif pose == 'cheer' %}
+  <path d="M0 -7 L2.2 -2.2 L7 0 L2.2 2.2 L0 7 L-2.2 2.2 L-7 0 L-2.2 -2.2 Z"
+        transform="translate(9,28) scale(0.8)" fill="#c9a961" />
+  <path d="M0 -7 L2.2 -2.2 L7 0 L2.2 2.2 L0 7 L-2.2 2.2 L-7 0 L-2.2 -2.2 Z"
+        transform="translate(112,30) scale(0.72)" fill="#c9a961" opacity="0.85" />
+  {% endif %}
+</svg>
+{%- endmacro %}

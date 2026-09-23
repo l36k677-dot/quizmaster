@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+{% block title %}资料库与 RAG{% endblock %}
+{% block page_heading %}资料库与 RAG{% endblock %}
+{% block page_crumb %}管理端 · 导入课程讲义，为答错题目生成可溯源的增强解析{% endblock %}
+
+{% block content %}
+<div class="grid grid-4">
+  <div class="stat">
+    <div class="stat-label">RAG 功能开关</div>
+    <div class="stat-value" style="font-size:20px">{{ '已启用' if status.enabled else '已关闭' }}</div>
+    <div class="stat-foot">REWARD_ENABLED 之外的独立开关 RAG_ENABLED</div>
+  </div>
+  <div class="stat">
+    <div class="stat-label">模型接入</div>
+    <div class="stat-value" style="font-size:20px">{{ '已配置' if status.modelConfigured else '未配置' }}</div>
+    <div class="stat-foot">{{ status.model or '未设置 AI_MODEL' }}</div>
+  </div>
+  <div class="stat">
+    <div class="stat-label">资料份数</div>
+    <div class="stat-value">{{ status.documentCount }}<small>份</small></div>
+    <div class="stat-foot">切片 {{ status.chunkCount }} 个</div>
+  </div>
+  <div class="stat">
+    <div class="stat-label">生成超时</div>
+    <div class="stat-value">{{ status.timeoutSeconds }}<small>秒</small></div>
+    <div class="stat-foot">超时自动降级为题库解析</div>
+  </div>
+</div>
+
+<div class="card reveal" style="margin-top:18px">
+  <div class="card-title">
+    <h3>导入课程资料</h3>
+    <span class="hint">支持 .md / .txt，单份不超过 1MB；导入后立即建索引</span>
+  </div>
+  <form id="ingest-form">
+    <div class="form-row">
+      <div class="field">
+        <label for="k-title">资料标题</label>
+        <input id="k-title" type="text" required placeholder="如：南开校史讲义" />
+      </div>
+      <div class="field">
+        <label for="k-course">所属课程（可选）</label>
+        <input id="k-course" type="text" value="南开校史" />
+      </div>
+    </div>
+    <div class="field">
+      <label for="k-file">选择本地文件（可选，选择后自动填充正文）</label>
+      <input id="k-file" type="file" accept=".md,.txt,.markdown" />
+    </div>
+    <div class="field">
+      <label for="k-content">资料正文（Markdown，建议包含一/二级标题）</label>
+      <textarea id="k-content" rows="8" required placeholder="## 第一章 创校与早期发展&#10;&#10;1919 年……"></textarea>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-gold" type="submit" id="ingest-btn">导入并建索引</button>
+      <span class="hint-text">相同内容重复导入会被自动识别并复用，不会产生重复切片。</span>
+    </div>
+  </form>
+</div>
+
+<div class="card reveal">
+  <div class="card-title">
+    <h3>已导入资料</h3>
+    <span class="hint">检索采用 BM25 稀疏检索，不依赖向量库</span>
+  </div>
+  {% if status.documents %}
+  <div class="table-wrap">
+    <table class="data">
+      <thead><tr><th>标题</th><th>课程</th><th>文件名</th><th>切片数</th><th>状态</th><th>导入时间</th><th></th></tr></thead>
+      <tbody>
+        {% for doc in status.documents %}
+        <tr>
+          <td>{{ doc.title }}</td>
+          <td>{{ doc.course or '-' }}</td>
+          <td class="hint-text">{{ doc.fileName or '-' }}</td>
+          <td class="num">{{ doc.chunkCount }}</td>
+          <td><span class="tag tag-ok">{{ doc.status }}</span></td>
+          <td class="hint-text">{{ doc.createdAt[:19].replace('T', ' ') }}</td>
+          <td><button class="btn btn-sm del-doc" data-id="{{ doc.id }}">删除</button></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty">
+    <strong>尚未导入资料</strong>
+    没有资料时，结果页会明确提示「未检索到足够相关的课程资料」，并使用题库标准解析，不影响成绩。
+  </div>
+  {% endif %}
+</div>
+
+<div class="card reveal">
+  <div class="card-title"><h3>降级策略对照</h3></div>
+  <div class="table-wrap">
+    <table class="data">
+      <thead><tr><th>故障</th><th>系统处理</th><th>对核心系统影响</th></tr></thead>
+      <tbody>
+        <tr><td>RAG_ENABLED=false</td><td>隐藏生成入口，仅显示题库解析</td><td>无</td></tr>
+        <tr><td>未配置 API Key</td><td>提示未配置，仅显示题库解析</td><td>无</td></tr>
+        <tr><td>资料未导入</td><td>返回 RAG_NO_DOCUMENT 并降级</td><td>无</td></tr>
+        <tr><td>检索相关度过低</td><td>返回 RAG_NO_RELEVANT_CHUNK 并降级</td><td>无</td></tr>
+        <tr><td>模型超时</td><td>超时 {{ status.timeoutSeconds }} 秒中止并降级</td><td>无</td></tr>
+        <tr><td>模型输出非 JSON</td><td>校验失败并降级</td><td>无</td></tr>
+        <tr><td>引用了不存在的片段</td><td>丢弃生成结果并降级</td><td>无</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.getElementById('k-file').addEventListener('change', (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      document.getElementById('k-content').value = reader.result;
+      if (!document.getElementById('k-title').value) {
+        document.getElementById('k-title').value = file.name.replace(/\.[^.]+$/, '');
+      }
+    };
+    reader.readAsText(file, 'utf-8');
+  });
+
+  document.getElementById('ingest-form').addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const button = document.getElementById('ingest-btn');
+    button.disabled = true;
+    button.textContent = '正在切分并建索引…';
+    try {
+      const data = await API.post('/api/admin/knowledge', {
+        title: document.getElementById('k-title').value.trim(),
+        course: document.getElementById('k-course').value.trim() || null,
+        fileName: null,
+        content: document.getElementById('k-content').value,
+      });
+      toast(`已导入「${data.title}」，生成 ${data.chunkCount} 个切片`, 'ok');
+      setTimeout(() => window.location.reload(), 700);
+    } catch (err) {
+      toast(err.message, 'err');
+      button.disabled = false;
+      button.textContent = '导入并建索引';
+    }
+  });
+
+  document.addEventListener('click', async (event) => {
+    const button = event.target.closest('.del-doc');
+    if (!button) return;
+    if (!window.confirm('确认删除该资料及其全部切片？')) return;
+    try {
+      await API.del('/api/admin/knowledge/' + button.dataset.id);
+      toast('资料已删除', 'ok');
+      window.location.reload();
+    } catch (err) {
+      toast(err.message, 'err');
+    }
+  });
+</script>
+{% endblock %}

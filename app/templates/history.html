@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}历史成绩{% endblock %}
+{% block page_heading %}历史成绩{% endblock %}
+{% block page_crumb %}仅显示已完成或超时结算的会话，进行中的不计入{% endblock %}
+
+{% block content %}
+<div class="card reveal">
+  <div class="card-title">
+    <h3>成绩记录（共 {{ data.total }} 局）</h3>
+    <div style="display:flex;gap:8px">
+      <a class="btn btn-sm {% if not status_filter %}btn-primary{% endif %}" href="/history">全部</a>
+      <a class="btn btn-sm {% if status_filter == 'COMPLETED' %}btn-primary{% endif %}" href="/history?status=COMPLETED">主动提交</a>
+      <a class="btn btn-sm {% if status_filter == 'TIMEOUT' %}btn-primary{% endif %}" href="/history?status=TIMEOUT">超时结算</a>
+    </div>
+  </div>
+
+  {% if data['items'] %}
+  <div class="table-wrap">
+    <table class="data">
+      <thead>
+        <tr>
+          <th>#</th><th>完成时间</th><th>状态</th><th>得分</th><th>正确率</th>
+          <th>对 / 错</th><th>用时</th><th>评级</th>{% if reward_enabled %}<th>SP</th>{% endif %}<th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in data['items'] %}
+        <tr>
+          <td class="num">{{ (data.page - 1) * data.pageSize + loop.index }}</td>
+          <td>{{ row.finishedAt | datetime_cst }}</td>
+          <td>
+            <span class="tag {% if row.status == 'TIMEOUT' %}tag-danger{% else %}tag-ok{% endif %}">
+              {{ '超时' if row.status == 'TIMEOUT' else '已完成' }}
+            </span>
+          </td>
+          <td class="num"><b>{{ row.score }}</b></td>
+          <td class="num">{{ (row.correctRate * 100) | round(1) }}%</td>
+          <td class="num">{{ row.correctCount }} / {{ row.wrongCount }}</td>
+          <td class="num">{{ row.durationSeconds | duration }}</td>
+          <td>{{ row.gradeLabel }}</td>
+          {% if reward_enabled %}<td class="num">{{ row.spEarned if row.spEarned is not none else '—' }}</td>{% endif %}
+          <td><a class="btn btn-sm btn-ghost" href="/result/{{ row.sessionId }}">详情</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {% if data.totalPages > 1 %}
+  <div class="pager">
+    {% if data.page > 1 %}
+    <a class="btn btn-sm" href="/history?page={{ data.page - 1 }}{% if status_filter %}&status={{ status_filter }}{% endif %}">上一页</a>
+    {% endif %}
+    <span class="info">第 {{ data.page }} / {{ data.totalPages }} 页</span>
+    {% if data.page < data.totalPages %}
+    <a class="btn btn-sm" href="/history?page={{ data.page + 1 }}{% if status_filter %}&status={{ status_filter }}{% endif %}">下一页</a>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  {% else %}
+  <div class="empty">
+    <strong>暂无成绩记录</strong>
+    完成一局竞答后，这里会显示得分、正确率、用时与评级，并支持查看逐题解析。
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,220 @@
+{% extends "base.html" %}
+{% block title %}首页{% endblock %}
+{% block page_heading %}首页{% endblock %}
+{% block page_crumb %}概览 · 开始新一局竞答{% endblock %}
+{# 首页要在首屏装下全部模块，内容区留白因此比其它页面收紧一档 #}
+{% block body_class %}is-dashboard{% endblock %}
+
+{% import "_mascot.html" as mascot %}
+{% block content %}
+{# 横幅：左文右图。右侧从单张插画改成轮播 —— 校史不止一栋楼，
+   八里台的新开湖、津南的木斋图书馆都值得出现在这里。
+   第一张图直出（脚本失效时也看得到），其余靠脚本渐入。 #}
+<section class="hero reveal">
+  <div class="hero-body">
+    <div class="eyebrow">Nankai University History Quiz</div>
+    <h2>以史为鉴<br />允公允能</h2>
+    <p>从 1904 年的私立中学堂，到今天的八里台与津南 —— 挑一局题，把这段校史走一遍。</p>
+    <div class="hero-actions">
+      <a class="btn btn-gold" href="#start-form">开始挑战</a>
+      <a class="btn btn-ghost" href="/knowledge">逛逛校史知识库</a>
+    </div>
+  </div>
+
+  <figure class="hero-figure" data-hero-slides>
+    {# data-caption 是叠在画面上的图注，与图片同步切换；
+       图注只描述画面与校区，不对插画做写实指认。 #}
+    <img data-hero-slide data-caption="八里台 · 主楼"
+         src="/static/img/hero-campus.webp"
+         alt="手绘水彩插画：校园主楼的钟楼与红柱廊立在绿树与晨光之间" />
+    <img data-hero-slide data-caption="八里台 · 新开湖"
+         src="/static/img/hero-xinkaihu.webp"
+         alt="手绘水彩插画：八里台校区新开湖，湖面倒映着教学楼，两岸秋树泛黄" />
+    <img data-hero-slide data-caption="津南 · 木斋图书馆"
+         src="/static/img/hero-muzhai.webp"
+         alt="手绘水彩插画：津南校区木斋图书馆，红砖楼体与穹顶映在蓝天下" />
+    <img data-hero-slide data-caption="津南 ·大通学生活动中心"
+         src="/static/img/hero-jinnan.webp"
+         alt="手绘水彩插画：津南校区白色镂空立面的建筑临湖而立，垂柳拂水" />
+    <figcaption class="hero-caption" data-hero-caption>主楼 · 手绘插画</figcaption>
+    <div class="hero-dots" data-hero-dots></div>
+  </figure>
+</section>
+
+{# 中段：左边开考、右边战况。两块并排是为了让首页一屏读完 ——
+   旧版从上到下依次铺 hero、4 张统计卡、等级卡、表单、最近成绩，
+   在 900px 高的窗口里要滚动两次才看得全。 #}
+<div class="dash-mid">
+  <div class="card reveal start-card">
+    <div class="card-title">
+      <h3>开始新一局</h3>
+      <span class="hint">题库可用 {{ total_available }} 道 · 每题 {{ per_question_seconds }} 秒</span>
+    </div>
+
+    <form id="start-form" data-tour="start-form">
+      <div class="form-row">
+        <div class="field">
+          <label for="questionCount">题量</label>
+          <select id="questionCount">
+            {% for count in allowed_counts %}
+            <option value="{{ count }}" {% if count == 10 %}selected{% endif %}>{{ count }} 题</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="field">
+          <label for="categoryId">分类</label>
+          <select id="categoryId">
+            <option value="">全部分类</option>
+            {% for c in categories %}
+            <option value="{{ c.id }}" data-available="{{ c.available }}">{{ c.name }}（{{ c.available }} 题）</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="field">
+          <label for="difficulty">难度</label>
+          <select id="difficulty">
+            <option value="">不限难度</option>
+            <option value="EASY">简单</option>
+            <option value="MEDIUM">中等</option>
+            <option value="HARD">困难</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>可用题量</label>
+          <div class="hint-text" id="availability" style="padding-top:10px">正在读取…</div>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-gold" type="submit" id="start-button">开始挑战</button>
+        <span class="hint-text">创建后冻结题目与截止时间，刷新不重置计时。</span>
+      </div>
+    </form>
+  </div>
+
+  <div class="dash-side">
+    <div class="stat-board reveal" data-tour="stat-board">
+      <div class="board-item" style="--tint: var(--teal-wash)">
+        <div class="stat-label">累计测评</div>
+        <div class="stat-value">{{ data.stats.finishedSessions }}<small>局</small></div>
+      </div>
+      <div class="board-item" style="--tint: var(--gold-wash)">
+        <div class="stat-label">最高得分</div>
+        <div class="stat-value">{{ data.stats.bestScore }}<small>分</small></div>
+      </div>
+      <div class="board-item" style="--tint: var(--indigo-wash)">
+        <div class="stat-label">平均正确率</div>
+        <div class="stat-value">{{ (data.stats.avgCorrectRate * 100) | round(1) }}<small>%</small></div>
+      </div>
+      <div class="board-item" style="--tint: var(--ochre-wash)">
+        <div class="stat-label">排行榜名次</div>
+        <div class="stat-value">
+          {% if data.stats.rank %}{{ data.stats.rank }}<small>/ {{ data.stats.totalPlayers }}</small>{% else %}—{% endif %}
+        </div>
+      </div>
+    </div>
+
+    {% if reward_enabled and reward and reward.level %}
+    <div class="card level-card reveal" data-tour="level-card">
+      <div class="card-title">
+        <h3>研习等级</h3>
+        <a class="btn btn-sm btn-ghost" href="/achievements">成就 {{ reward.unlockedCount }}/{{ reward.totalAchievements }}</a>
+      </div>
+      <div class="level-bar">
+        <span class="level-badge">{{ reward.level.title }} · {{ reward.studyPoints }} SP</span>
+        <span class="level-track"><i data-progress="{{ reward.level.progressPercent }}%" style="width:{{ reward.level.progressPercent }}%"></i></span>
+      </div>
+      <div class="hint-text level-note">
+        {% if reward.level.isMaxLevel %}已达最高等级
+        {% else %}距「{{ reward.level.nextTitle }}」还差 {{ reward.level.pointsToNext }} SP{% endif %}
+        · 连续研习 {{ reward.currentStreak }} 天
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<div class="card reveal recent-card" data-tour="recent-card">
+  <div class="card-title">
+    <h3>最近成绩</h3>
+    <a class="btn btn-sm btn-ghost" href="/history">全部历史 →</a>
+  </div>
+  {% if data.recent %}
+  <div class="table-wrap">
+    <table class="data compact">
+      <thead>
+        <tr>
+          <th>完成时间</th><th>状态</th><th>得分</th><th>正确 / 错 / 未答</th><th>用时</th><th>评级</th><th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {# 只铺两行：整页要在首屏读完，详细记录交给「历史成绩」页 #}
+        {% for row in data.recent[:2] %}
+        <tr>
+          <td>{{ row.finishedAt | datetime_cst }}</td>
+          <td><span class="tag {% if row.status == 'TIMEOUT' %}tag-danger{% else %}tag-ok{% endif %}">{{ '超时提交' if row.status == 'TIMEOUT' else '已完成' }}</span></td>
+          <td class="num">{{ row.score }}</td>
+          <td class="num">{{ row.correctCount }} / {{ row.wrongCount }} / {{ row.questionCount - row.correctCount - row.wrongCount }}</td>
+          <td class="num">{{ row.durationSeconds | duration }}</td>
+          <td>{{ row.gradeLabel }}</td>
+          <td><a class="btn btn-sm btn-ghost" href="/result/{{ row.sessionId }}">查看</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty">
+    <div class="empty-mascot">{{ mascot.mascot('wave') }}</div>
+    <strong>还没有成绩记录</strong>
+    选择题量与分类后点击「开始挑战」，完成第一局即可看到统计与排行变化。
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const availabilityBox = document.getElementById('availability');
+  const categorySelect = document.getElementById('categoryId');
+  const difficultySelect = document.getElementById('difficulty');
+
+  async function refreshAvailability() {
+    const params = new URLSearchParams();
+    if (categorySelect.value) params.set('categoryId', categorySelect.value);
+    if (difficultySelect.value) params.set('difficulty', difficultySelect.value);
+    availabilityBox.textContent = '正在读取…';
+    try {
+      const data = await API.get('/api/quiz/availability?' + params.toString());
+      availabilityBox.textContent = `当前条件可用 ${data.available} 道（每题 ${data.perQuestionSeconds} 秒）`;
+      availabilityBox.style.color = data.available < 5 ? '#b8763c' : '';
+    } catch (err) {
+      availabilityBox.textContent = err.message;
+    }
+  }
+
+  categorySelect.addEventListener('change', refreshAvailability);
+  difficultySelect.addEventListener('change', refreshAvailability);
+  refreshAvailability();
+
+  document.getElementById('start-form').addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const button = document.getElementById('start-button');
+    button.disabled = true;
+    button.textContent = '正在抽题…';
+    try {
+      const session = await API.post('/api/quiz/sessions', {
+        questionCount: Number(document.getElementById('questionCount').value),
+        categoryId: categorySelect.value || null,
+        difficulty: difficultySelect.value || null,
+      });
+      window.location.href = '/quiz/start/' + session.sessionId;
+    } catch (err) {
+      toast(err.message, 'err');
+      button.disabled = false;
+      button.textContent = '开始挑战';
+    }
+  });
+</script>
+{% endblock %}

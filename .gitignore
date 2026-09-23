@@ -1,0 +1,41 @@
+# ---- 环境与密钥 ----
+.env
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+
+# ---- 数据库与备份（运行时产物，含真实账号与答题记录）----
+data/*.db
+data/*.db-journal
+data/*.db-shm
+data/*.db-wal
+backups/
+
+# ---- 运行产物 ----
+logs/
+out/
+.pytest_cache/
+.cache-chrome/
+.uv-cache/
+dist/
+build/
+
+# ---- 工作区辅助目录（截图 / 打包 / PDF 渲染的中间产物，约 8 MB）----
+.workbuddy/
+
+# ---- 编辑器与系统 ----
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# ---- 不随本仓库发布：课程材料，随提交包单独提交 ----
+# AI 辅助开发记录（完整对话轮次记录，属课程作业材料）。README §14 指向它，
+# 因此在本仓库中该链接指向的文件不存在 —— 这是有意为之，不是漏提交。
+docs/AI_ASSISTED_DEVELOPMENT.md
+# 选题说明与演示视频链接（含会议链接与个人信息）；视频本体体积过大，不上仓库
+选题说明.txt
+选题和演示视频链接.txt
+*.mp4

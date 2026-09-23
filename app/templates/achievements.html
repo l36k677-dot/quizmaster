@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% import "_icons.html" as icons %}
+{% block title %}成就荣誉墙{% endblock %}
+{% block page_heading %}成就荣誉墙{% endblock %}
+{% block page_crumb %}成就由服务端从终态会话派生，可重算复现{% endblock %}
+
+{% block content %}
+<div class="card reveal">
+  <div class="card-title">
+    <h3>{{ current_user.display_name or current_user.username }} 的研习档案</h3>
+    <span class="hint">{{ wall.unlockedCount }} / {{ wall.totalCount }} 项成就已解锁</span>
+  </div>
+  <div class="grid grid-4">
+    <div class="stat reveal" style="--i: 0">
+      <div class="stat-label">累计研习积分</div>
+      <div class="stat-value">{{ summary.studyPoints }}<small>SP</small></div>
+      <div class="stat-foot">单局上限 {{ summary.spSessionCap }} SP</div>
+    </div>
+    <div class="stat reveal" style="--i: 1">
+      <div class="stat-label">等级称号</div>
+      <div class="stat-value" style="font-size:22px">{{ summary.level.title }}</div>
+      <div class="stat-foot">
+        {% if summary.level.isMaxLevel %}已达最高等级
+        {% else %}距「{{ summary.level.nextTitle }}」还差 {{ summary.level.pointsToNext }} SP{% endif %}
+      </div>
+    </div>
+    <div class="stat reveal" style="--i: 2">
+      <div class="stat-label">连续研习</div>
+      <div class="stat-value">{{ summary.currentStreak }}<small>天</small></div>
+      <div class="stat-foot">历史最长 {{ summary.bestStreak }} 天</div>
+    </div>
+    <div class="stat reveal" style="--i: 3">
+      <div class="stat-label">完成局数</div>
+      <div class="stat-value">{{ wall.finishedSessions }}<small>局</small></div>
+      <div class="stat-foot">仅统计终态会话</div>
+    </div>
+  </div>
+</div>
+
+<div class="card reveal">
+  <div class="card-title">
+    <h3>SP 计算口径</h3>
+    <span class="hint">可现场纸笔验算</span>
+  </div>
+  <div class="explain-box" style="margin-top:0">
+    <div class="title">研习积分公式</div>
+    <div style="font-family:var(--font-mono);font-size:12.5px">{{ summary.spFormula }}</div>
+    <div class="hint-text" style="margin-top:8px">
+      完成基数 20 · 正确率奖励 round(得分×0.5) 上限 50 · 难度加成 EASY 0 / MEDIUM 5 / HARD 10 · 连续研习 min(5×(n−1), 25)
+    </div>
+  </div>
+</div>
+
+<div class="card reveal">
+  <div class="card-title">
+    <h3>成就</h3>
+    <span class="hint">未解锁项显示当前进度</span>
+  </div>
+  <div class="ach-grid">
+    {% for item in wall['items'] %}
+    {# 图标从 item.icon 来（后端由 ACHIEVEMENT_ICONS 补齐），不再是 ★ / ☆ 两个符号。
+       已解锁的多一圈印章光晕，与结果页「本次新解锁」的动画同源。 #}
+    <div class="ach reveal {{ 'unlocked' if item.unlocked else 'locked' }}" style="--i: {{ loop.index0 }}">
+      <div class="ach-icon">{{ icons.ach_icon(item.icon) }}</div>
+      <div class="ach-name">{{ item.name }}</div>
+      <div class="ach-desc">{{ item.description }}</div>
+      <div class="ach-progress">
+        <div class="bar"><i data-progress="{{ item.progressPercent }}%" style="width:{{ item.progressPercent }}%"></i></div>
+        <div class="txt">
+          {% if item.unlocked %}已解锁{% else %}{{ item.current }} / {{ item.target }}{% endif %}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+{% if current_user.role == 'ADMIN' %}
+<div class="card reveal">
+  <div class="card-title">
+    <h3>管理端：奖励重算</h3>
+    <span class="hint">按原始终态会话重算 SP、连续天数与成就，结果应与在线值一致</span>
+  </div>
+  <button class="btn" id="recompute-btn">重算全部用户</button>
+  <pre class="explain-box" id="recompute-out" style="display:none;white-space:pre-wrap"></pre>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const button = document.getElementById('recompute-btn');
+  if (button) {
+    button.addEventListener('click', async () => {
+      button.disabled = true;
+      button.textContent = '正在重算…';
+      try {
+        const data = await API.post('/api/admin/rewards/recompute', { all: true });
+        const out = document.getElementById('recompute-out');
+        out.style.display = 'block';
+        out.textContent = data.results.map((row) =>
+          `${row.username}: SP=${row.studyPoints} 连续=${row.currentStreak} 局数=${row.sessions} 新解锁=${(row.newlyUnlocked || []).join(',') || '无'}`
+        ).join('\n');
+        toast(`已重算 ${data.recomputed} 个用户`, 'ok');
+      } catch (err) {
+        toast(err.message, 'err');
+      }
+      button.disabled = false;
+      button.textContent = '重算全部用户';
+    });
+  }
+</script>
+{% endblock %}

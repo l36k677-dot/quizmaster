@@ -1,0 +1,21 @@
+# 统一换行符：仓库内一律 LF，避免 Windows 检出的 CRLF 让 shell 脚本失效。
+* text=auto eol=lf
+
+# Windows 批处理必须 CRLF —— cmd.exe 对 LF 行尾的 goto / label 跳转不可靠。
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Shell 脚本必须 LF，否则 Linux / macOS 上会报 bad interpreter。
+*.sh text eol=lf
+
+# 二进制：不做换行转换，也不做行级 diff。
+*.png   binary
+*.webp  binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.ico   binary
+*.db    binary
+*.woff  binary
+*.woff2 binary
+*.ttf   binary

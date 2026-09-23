@@ -1,0 +1,52 @@
+{# 新手指引（荷宝导览）：覆盖层骨架 + 荷宝四姿势 + 步骤数据
+   ------------------------------------------------------------
+   分工：**服务端给内容，前端只给几何**。
+     · 步骤标题 / 正文 / 目标锚点 / 姿势，全部来自 app/services/tour.py，
+       在这里序列化成一段 JSON —— 因此 pytest 与冒烟测试直接读 HTML 就能
+       核对文案，不需要跑浏览器；
+     · 定位、高亮、键盘与焦点管理在 static/js/tour.js。
+
+   无脚本时的表现：整个覆盖层默认 hidden，舱门按钮（账户菜单里的
+   「新手指引」）也默认 hidden，由脚本解除 —— 不给用户留一个点了没反应的
+   死控件。指引本身只是「讲解」，页面内容与数据渲染都不依赖它。
+
+   荷宝的来历与署名见 _mascot.html 顶部注释与 .tour-credit。
+#}
+{% if current_user and tour %}
+{% import "_mascot.html" as mascot %}
+<div class="tour-layer" id="tour-layer" hidden>
+  {# 点遮罩即跳过：指引是「随时能走」的，不强迫用户去找按钮 #}
+  <div class="tour-backdrop" data-tour-backdrop></div>
+  <div class="tour-spot" data-tour-spot aria-hidden="true"></div>
+
+  <section class="tour-card" data-tour-card role="dialog" aria-modal="true"
+           aria-labelledby="tour-title" aria-describedby="tour-body" tabindex="-1">
+    <div class="tour-mascot" data-tour-mascot data-pose="wave">
+      {{ mascot.mascot('wave') }}
+      {{ mascot.mascot('point') }}
+      {{ mascot.mascot('think') }}
+      {{ mascot.mascot('cheer') }}
+    </div>
+
+    <div class="tour-panel">
+      <div class="tour-meta">
+        <span class="tour-badge">新手指引</span>
+        <span class="tour-count" data-tour-count></span>
+      </div>
+      <h2 class="tour-title" id="tour-title" data-tour-title></h2>
+      <p class="tour-body" id="tour-body" data-tour-body></p>
+      <div class="tour-dots" data-tour-dots aria-hidden="true"></div>
+
+      <div class="tour-actions">
+        <button type="button" class="btn btn-sm btn-ghost" data-tour-skip>跳过</button>
+        <span class="tour-gap"></span>
+        <button type="button" class="btn btn-sm btn-ghost" data-tour-prev>上一步</button>
+        <button type="button" class="btn btn-sm btn-gold" data-tour-next>下一步</button>
+      </div>
+
+      <p class="tour-credit">{{ tour.credit }}</p>
+    </div>
+  </section>
+</div>
+<script type="application/json" id="tour-data">{{ tour | tojson }}</script>
+{% endif %}

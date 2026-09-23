@@ -1,0 +1,1160 @@
+{
+  "meta": {
+    "subject": "南开大学校史",
+    "version": "2.0.0",
+    "note": "80 道题：单选 40 / 判断 20（其中「正确」10 道、「错误」10 道）/ 填空 20；难度分布 EASY 16 / MEDIUM 39 / HARD 25。判断题的 A/B 对应「正确 / 错误」；填空题按关键字命中判分（答出任一关键字、不含污言秽语、不明显离谱即算对）。所有标准答案均须人工复核后定稿。",
+    "categories": [
+      "创校与发展",
+      "人物与校友",
+      "校园与文化",
+      "精神与学科"
+    ]
+  },
+  "questions": [
+    {
+      "id": "q_nk_001",
+      "category": "创校与发展",
+      "difficulty": "EASY",
+      "content": "南开大学创办于哪一年？",
+      "options": {
+        "A": "1911 年",
+        "B": "1919 年",
+        "C": "1923 年",
+        "D": "1937 年"
+      },
+      "correctAnswer": "B",
+      "explanation": "南开大学由严修、张伯苓于 1919 年创办，同年 9 月举行开学典礼，第一期学生中含周恩来。",
+      "sourceTitle": "南开校史讲义",
+      "sourceSection": "第一章 创校与早期发展"
+    },
+    {
+      "id": "q_nk_002",
+      "category": "创校与发展",
+      "difficulty": "EASY",
+      "content": "南开大学的创办者是？",
+      "options": {
+        "A": "蔡元培与胡适",
+        "B": "梅贻琦与蒋梦麟",
+        "C": "张謇与黄炎培",
+        "D": "严修与张伯苓"
+      },
+      "correctAnswer": "D",
+      "explanation": "南开系列学校由严修（严范孙）与张伯苓共同创办，二人被称为南开教育的奠基者。",
+      "sourceTitle": "南开校史讲义",
+      "sourceSection": "第一章 创校与早期发展"
+    },
+    {
+      "id": "q_nk_003",
+      "category": "创校与发展",
+      "difficulty": "MEDIUM",
+      "content": "南开大学把校庆日定在每年的哪一天？",
+      "options": {
+        "A": "9 月 25 日",
+        "B": "10 月 17 日",
+        "C": "5 月 4 日",
+        "D": "7 月 7 日"
+      },
+      "correctAnswer": "B",
+      "explanation": "1904 年 10 月 17 日南开学校的前身私立中学堂创立，因此 10 月 17 日被定为校庆日。",
+      "sourceTitle": "南开校史讲义",
+      "sourceSection": "第一章 创校与早期发展"
+    },
+    {
+      "id": "q_nk_004",
+      "category": "创校与发展",
+      "difficulty": "MEDIUM",
+      "content": "南开大学 1919 年创办时最早设立的是哪几个学科？",
+      "options": {
+        "A": "工、农、医三科",
+        "B": "法、商、教育三科",
+        "C": "文、法、理三科",
+        "D": "文、理、商三科"
+      },
+      "correctAnswer": "D",
+      "explanation": "南开大学创办之初设文、理、商三科，其后增设矿科，逐步形成文理商并重的格局。",
+      "sourceTitle": "南开校史讲义",
+      "sourceSection": "第一章 创校与早期发展"
+    },
+    {
+      "id": "q_nk_005",
+      "category": "创校与发展",
+      "difficulty": "MEDIUM",
+      "content": "1937 年全面抗战爆发后，南开大学遭遇的直接打击是？",
+      "options": {
+        "A": "校园被日军炮击轰炸、校舍被毁",
+        "B": "主动将全校迁往西安继续办学",
+        "C": "与清华大学合并组建新的国立大学",
+        "D": "宣布暂停办学一年以避战火"
+      },
+      "correctAnswer": "A",
+      "explanation": "1937 年 7 月，南开大学校园遭日军炮击轰炸，校舍严重被毁，师生被迫南迁，南开由此成为抗战中最早被毁的大学之一。",
+      "sourceTitle": "南开校史讲义",
+      "sourceSection": "第二章 抗战内迁与西南联大"
+    },
+    {
+      "id": "q_nk_006",
+      "category": "创校与发展",
+      "difficulty": "EASY",
+      "content": "1938 年，南开大学与北京大学、清华大学共同组建了哪所大学？",
+      "options": {
+        "A": "国立西南联合大学",
+        "B": "国立长沙临时大学",
+        "C": "国立北平大学",
+        "D": "国立联合学院"
+      },
+      "correctAnswer": "A",
+      "explanation": "1937 年三校先组成国立长沙临时大学，1938 年在昆明组建国立西南联合大学，校训为“刚毅坚卓”。",
+      "sourceTitle": "南开校史讲义",
+      "sourceSection": "第二章 抗战内迁与西南联大"
+    },
+    {
+      "id": "q_nk_007",
+      "category": "创校与发展",
+      "difficulty": "HARD",
+      "content": "南开大学由私立改为国立是在哪一年？",
+      "options": {
+        "A": "1946 年",
+        "B": "1937 年",
+        "C": "1949 年",
+        "D": "1952 年"
+      },
+      "correctAnswer": "A",
+      "explanation": "1946 年西南联大结束、三校复员，南开大学改为国立，并于同年 10 月在天津八里台复校。",
+      "sourceTitle": "南开校史讲义",
+      "sourceSection": "第一章 创校与早期发展"
+    },
+    {
+      "id": "q_nk_008",
+      "category": "创校与发展",
+      "difficulty": "MEDIUM",
+      "content": "1952 年全国院系调整后，南开大学被定位为哪一类高校？",
+      "options": {
+        "A": "工科院校",
+        "B": "师范院校",
+        "C": "文理综合大学",
+        "D": "农业院校"
+      },
+      "correctAnswer": "C",
+      "explanation": "院系调整后南开大学成为文理综合大学，数学、化学、经济、历史等学科基础由此进一步夯实。",
+      "sourceTitle": "南开校史讲义",
+      "sourceSection": "第三章 学科建设与布局调整"
+    },
+    {
+      "id": "q_nk_009",
+      "category": "创校与发展",
+      "difficulty": "EASY",
+      "content": "南开大学迎来建校 100 周年是在哪一年？",
+      "options": {
+        "A": "2010 年",
+        "B": "2019 年",
+        "C": "2015 年",
+        "D": "2021 年"
+      },
+      "correctAnswer": "B",
+      "explanation": "南开大学 1919 年创办，2019 年迎来建校 100 周年，同年举办系列纪念活动。",
+      "sourceTitle": "南开校史讲义",
+      "sourceSection": "第一章 创校与早期发展"
+    },
+    {
+      "id": "q_nk_010",
+      "category": "创校与发展",
+      "difficulty": "HARD",
+      "content": "南开大学津南校区（新校区）启用是在哪一年？",
+      "options": {
+        "A": "2010 年",
+        "B": "2018 年",
+        "C": "2015 年",
+        "D": "2021 年"
+      },
+      "correctAnswer": "C",
+      "explanation": "2015 年南开大学津南校区启用，学校由此形成八里台校区与津南校区并行的办学格局。",
+      "sourceTitle": "南开校史讲义",
+      "sourceSection": "第一章 创校与早期发展"
+    },
+    {
+      "id": "q_nk_011",
+      "category": "人物与校友",
+      "difficulty": "EASY",
+      "content": "南开大学首任校长是？",
+      "options": {
+        "A": "严修",
+        "B": "杨石先",
+        "C": "曹禺",
+        "D": "张伯苓"
+      },
+      "correctAnswer": "D",
+      "explanation": "张伯苓是南开系列学校的创办人之一，出任南开大学首任校长。",
+      "sourceTitle": "南开人物志",
+      "sourceSection": "第一章 张伯苓与严修"
+    },
+    {
+      "id": "q_nk_012",
+      "category": "人物与校友",
+      "difficulty": "EASY",
+      "content": "“允公允能，日新月异”这一校训的提出者是？",
+      "options": {
+        "A": "张伯苓",
+        "B": "严修",
+        "C": "梅贻琦",
+        "D": "杨石先"
+      },
+      "correctAnswer": "A",
+      "explanation": "张伯苓提出“允公允能，日新月异”，其中“公”指爱国爱群之公德，“能”指服务社会之能力。",
+      "sourceTitle": "南开人物志",
+      "sourceSection": "第一章 张伯苓与严修"
+    },
+    {
+      "id": "q_nk_013",
+      "category": "人物与校友",
+      "difficulty": "EASY",
+      "content": "以下哪位共和国总理曾在南开大学求学？",
+      "options": {
+        "A": "陈毅",
+        "B": "李鹏",
+        "C": "朱镕基",
+        "D": "周恩来"
+      },
+      "correctAnswer": "D",
+      "explanation": "周恩来 1919 年入南开大学文科，是南开大学第一期学生，学号 62 号，1920 年赴法勤工俭学。",
+      "sourceTitle": "南开人物志",
+      "sourceSection": "第二章 杰出校友"
+    },
+    {
+      "id": "q_nk_014",
+      "category": "人物与校友",
+      "difficulty": "MEDIUM",
+      "content": "1930 年毕业于南开大学数学系、被誉为“微分几何之父”的数学家是？",
+      "options": {
+        "A": "华罗庚",
+        "B": "苏步青",
+        "C": "陈省身",
+        "D": "吴文俊"
+      },
+      "correctAnswer": "C",
+      "explanation": "陈省身 1930 年毕业于南开大学数学系，师从姜立夫，后成为世界级微分几何大师。",
+      "sourceTitle": "南开人物志",
+      "sourceSection": "第二章 杰出校友"
+    },
+    {
+      "id": "q_nk_015",
+      "category": "人物与校友",
+      "difficulty": "MEDIUM",
+      "content": "1985 年在南开大学创建数学研究所并担任所长的数学家是？",
+      "options": {
+        "A": "陈省身",
+        "B": "陈景润",
+        "C": "姜立夫",
+        "D": "丘成桐"
+      },
+      "correctAnswer": "A",
+      "explanation": "陈省身 1985 年创建南开数学研究所并任所长，推动南开数学学科走向国际前沿。",
+      "sourceTitle": "南开人物志",
+      "sourceSection": "第二章 杰出校友"
+    },
+    {
+      "id": "q_nk_016",
+      "category": "人物与校友",
+      "difficulty": "HARD",
+      "content": "与张伯苓共同创办南开、被尊为“南开校父”的是？",
+      "options": {
+        "A": "梁启超",
+        "B": "陶行知",
+        "C": "蔡元培",
+        "D": "严修"
+      },
+      "correctAnswer": "D",
+      "explanation": "严修（严范孙）是清末翰林、近代教育家，与张伯苓共同创办南开系列学校，被尊为“南开校父”。",
+      "sourceTitle": "南开人物志",
+      "sourceSection": "第一章 张伯苓与严修"
+    },
+    {
+      "id": "q_nk_017",
+      "category": "人物与校友",
+      "difficulty": "HARD",
+      "content": "长期担任南开大学校长、被誉为中国农药化学奠基人之一的化学家是？",
+      "options": {
+        "A": "侯德榜",
+        "B": "杨石先",
+        "C": "卢嘉锡",
+        "D": "唐敖庆"
+      },
+      "correctAnswer": "B",
+      "explanation": "杨石先长期在南开任教并担任校长，是中国农药化学的重要奠基人，为南开化学学科奠定基础。",
+      "sourceTitle": "南开人物志",
+      "sourceSection": "第三章 学术名家"
+    },
+    {
+      "id": "q_nk_018",
+      "category": "人物与校友",
+      "difficulty": "MEDIUM",
+      "content": "著名话剧《雷雨》的作者、曾在南开系列学校就读的戏剧家是？",
+      "options": {
+        "A": "老舍",
+        "B": "曹禺",
+        "C": "郭沫若",
+        "D": "田汉"
+      },
+      "correctAnswer": "B",
+      "explanation": "曹禺（万家宝）曾就读南开中学与南开大学，在南开期间参加新剧团活动，深受南开戏剧传统影响。",
+      "sourceTitle": "南开人物志",
+      "sourceSection": "第二章 杰出校友"
+    },
+    {
+      "id": "q_nk_019",
+      "category": "人物与校友",
+      "difficulty": "MEDIUM",
+      "content": "著名戏剧家、外交家张彭春是哪位南开创办人的弟弟？",
+      "options": {
+        "A": "严修",
+        "B": "蔡元培",
+        "C": "梅贻琦",
+        "D": "张伯苓"
+      },
+      "correctAnswer": "D",
+      "explanation": "张彭春是张伯苓之弟，长期主持南开新剧团，把现代话剧引入南开校园。",
+      "sourceTitle": "南开人物志",
+      "sourceSection": "第一章 张伯苓与严修"
+    },
+    {
+      "id": "q_nk_020",
+      "category": "人物与校友",
+      "difficulty": "MEDIUM",
+      "content": "1935 年在开学典礼上提出“你是中国人吗？你爱中国吗？你愿意中国好吗？”这“爱国三问”的教育家是？",
+      "options": {
+        "A": "严修",
+        "B": "陶行知",
+        "C": "张伯苓",
+        "D": "蔡元培"
+      },
+      "correctAnswer": "C",
+      "explanation": "“爱国三问”由张伯苓在民族危亡加深的背景下提出，成为南开爱国主义传统的重要象征。",
+      "sourceTitle": "南开人物志",
+      "sourceSection": "第一章 张伯苓与严修"
+    },
+    {
+      "id": "q_nk_021",
+      "category": "校园与文化",
+      "difficulty": "EASY",
+      "content": "南开大学的校训是？",
+      "options": {
+        "A": "自强不息，厚德载物",
+        "B": "刚毅坚卓",
+        "C": "实事求是",
+        "D": "允公允能，日新月异"
+      },
+      "correctAnswer": "D",
+      "explanation": "“允公允能，日新月异”是南开大学校训；“刚毅坚卓”是西南联大校训，“自强不息，厚德载物”出自《周易》。",
+      "sourceTitle": "南开校园文化读本",
+      "sourceSection": "第一章 校训与校歌"
+    },
+    {
+      "id": "q_nk_022",
+      "category": "校园与文化",
+      "difficulty": "MEDIUM",
+      "content": "南开大学校歌的开头是？",
+      "options": {
+        "A": "渤海之滨，白河之津",
+        "B": "大江之滨，黄鹤之楼",
+        "C": "燕山之麓，未名之畔",
+        "D": "黄河之滨，泰山之阳"
+      },
+      "correctAnswer": "A",
+      "explanation": "南开大学校歌以“渤海之滨，白河之津，巍巍我南开精神”开头，点明学校地处天津的地理与精神渊源。",
+      "sourceTitle": "南开校园文化读本",
+      "sourceSection": "第一章 校训与校歌"
+    },
+    {
+      "id": "q_nk_023",
+      "category": "校园与文化",
+      "difficulty": "HARD",
+      "content": "“南开”这一校名的由来是？",
+      "options": {
+        "A": "取自匾额题字“南开学堂”",
+        "B": "因学校最早建于天津城南的开洼地而得名",
+        "C": "由张伯苓命名，寓意“南方之光”",
+        "D": "取自当时天津“南开区”的行政区划名称"
+      },
+      "correctAnswer": "B",
+      "explanation": "南开学校最早建于天津城南的一片开洼地，“南开”由此得名，是先有地名俗称、后成校名。",
+      "sourceTitle": "南开校园文化读本",
+      "sourceSection": "第二章 校名与校园标识"
+    },
+    {
+      "id": "q_nk_024",
+      "category": "校园与文化",
+      "difficulty": "MEDIUM",
+      "content": "校训“允公允能”中的“公”主要指？",
+      "options": {
+        "A": "公平竞争的意识",
+        "B": "公开办学的原则",
+        "C": "爱国爱群之公德",
+        "D": "公立办学的性质"
+      },
+      "correctAnswer": "C",
+      "explanation": "“公”指爱国爱群之公德，强调服务国家与社会的公民责任；“能”指服务社会之能力。",
+      "sourceTitle": "南开校园文化读本",
+      "sourceSection": "第一章 校训与校歌"
+    },
+    {
+      "id": "q_nk_025",
+      "category": "校园与文化",
+      "difficulty": "EASY",
+      "content": "校训中的“日新月异”强调的是？",
+      "options": {
+        "A": "每天更新教学设备",
+        "B": "不断革新进取的精神",
+        "C": "定期更换校名",
+        "D": "频繁调整校址"
+      },
+      "correctAnswer": "B",
+      "explanation": "“日新月异”强调不断革新、追求进步，与“公能”合起来构成南开的教育理想。",
+      "sourceTitle": "南开校园文化读本",
+      "sourceSection": "第一章 校训与校歌"
+    },
+    {
+      "id": "q_nk_026",
+      "category": "校园与文化",
+      "difficulty": "MEDIUM",
+      "content": "南开大学校徽上的数字是哪一年？",
+      "options": {
+        "A": "1919",
+        "B": "1904",
+        "C": "1937",
+        "D": "1946"
+      },
+      "correctAnswer": "A",
+      "explanation": "南开大学校徽为圆形，外圈标注“南开大学 NANKAI UNIVERSITY”与建校年份 1919。",
+      "sourceTitle": "南开校园文化读本",
+      "sourceSection": "第二章 校名与校园标识"
+    },
+    {
+      "id": "q_nk_027",
+      "category": "校园与文化",
+      "difficulty": "MEDIUM",
+      "content": "南开大学八里台校区主楼最显著的外观特征是？",
+      "options": {
+        "A": "欧式穹顶教堂式造型",
+        "B": "红砖现代主义风格",
+        "C": "对称布局并带有方形钟楼",
+        "D": "传统四合院式院落"
+      },
+      "correctAnswer": "C",
+      "explanation": "八里台校区主楼以对称体量与钟楼为标志，是南开校园最具辨识度的建筑之一。",
+      "sourceTitle": "南开校园文化读本",
+      "sourceSection": "第三章 校园建筑与景观"
+    },
+    {
+      "id": "q_nk_028",
+      "category": "校园与文化",
+      "difficulty": "MEDIUM",
+      "content": "南开大学津南校区图书馆正立面上的显著装饰是？",
+      "options": {
+        "A": "张伯苓铜像",
+        "B": "校训石刻",
+        "C": "大型日晷",
+        "D": "居中的南开大学校徽"
+      },
+      "correctAnswer": "D",
+      "explanation": "津南校区图书馆以红砖立面与居中校徽为标志，是标志性校园建筑之一。",
+      "sourceTitle": "南开校园文化读本",
+      "sourceSection": "第三章 校园建筑与景观"
+    },
+    {
+      "id": "q_nk_029",
+      "category": "校园与文化",
+      "difficulty": "HARD",
+      "content": "南开大学校钟铭文中体现的办学追求是？",
+      "options": {
+        "A": "兼容并包、思想自由",
+        "B": "文以治国、理以强国、商以富国",
+        "C": "通专并重、手脑并用",
+        "D": "工学并举、实业救国"
+      },
+      "correctAnswer": "B",
+      "explanation": "南开校钟铭文以“文以治国，理以强国，商以富国”表达办学追求，体现文理商并重的理念。",
+      "sourceTitle": "南开校园文化读本",
+      "sourceSection": "第二章 校名与校园标识"
+    },
+    {
+      "id": "q_nk_030",
+      "category": "校园与文化",
+      "difficulty": "EASY",
+      "content": "南开大学目前主要分布在天津的哪两个校区？",
+      "options": {
+        "A": "迎水道校区与泰达校区",
+        "B": "和平校区与滨海校区",
+        "C": "南开校区与东丽校区",
+        "D": "八里台校区与津南校区"
+      },
+      "correctAnswer": "D",
+      "explanation": "南开大学现以八里台校区与津南校区为主体，形成老校区与新校区并行的格局。",
+      "sourceTitle": "南开校园文化读本",
+      "sourceSection": "第三章 校园建筑与景观"
+    },
+    {
+      "id": "q_nk_031",
+      "category": "精神与学科",
+      "difficulty": "HARD",
+      "content": "西南联合大学的校训是？",
+      "options": {
+        "A": "允公允能",
+        "B": "自强不息",
+        "C": "刚毅坚卓",
+        "D": "公能日新"
+      },
+      "correctAnswer": "C",
+      "explanation": "国立西南联合大学校训为“刚毅坚卓”，与南开“允公允能”分属不同学校，注意区分。",
+      "sourceTitle": "南开校史讲义",
+      "sourceSection": "第二章 抗战内迁与西南联大"
+    },
+    {
+      "id": "q_nk_032",
+      "category": "精神与学科",
+      "difficulty": "MEDIUM",
+      "content": "张伯苓常用来形容南开在艰难中坚持办学的名言是？",
+      "options": {
+        "A": "苟利国家生死以",
+        "B": "到边疆去，到农村去",
+        "C": "南开南开，越难越开",
+        "D": "刚毅坚卓，弦歌不辍"
+      },
+      "correctAnswer": "C",
+      "explanation": "“南开南开，越难越开”概括了南开在经费困难与战乱中坚持办学的韧性与精神。",
+      "sourceTitle": "南开校史讲义",
+      "sourceSection": "第四章 精神传统"
+    },
+    {
+      "id": "q_nk_033",
+      "category": "精神与学科",
+      "difficulty": "MEDIUM",
+      "content": "2017 年国家“双一流”建设中，南开大学入选的是？",
+      "options": {
+        "A": "一流大学建设高校 B 类",
+        "B": "仅入选一流学科建设名单",
+        "C": "一流大学建设高校 A 类",
+        "D": "未进入建设名单"
+      },
+      "correctAnswer": "C",
+      "explanation": "2017 年南开大学入选一流大学建设高校 A 类，此前也是“211 工程”“985 工程”高校。",
+      "sourceTitle": "南开校史讲义",
+      "sourceSection": "第三章 学科建设与布局调整"
+    },
+    {
+      "id": "q_nk_034",
+      "category": "精神与学科",
+      "difficulty": "EASY",
+      "content": "南开大学长期享有盛誉、具有传统优势的学科是？",
+      "options": {
+        "A": "天文学",
+        "B": "化学",
+        "C": "采矿工程",
+        "D": "农学"
+      },
+      "correctAnswer": "B",
+      "explanation": "南开化学是传统优势学科，建有元素有机化学等国家级科研平台，长期处于国内前列。",
+      "sourceTitle": "南开校史讲义",
+      "sourceSection": "第三章 学科建设与布局调整"
+    },
+    {
+      "id": "q_nk_035",
+      "category": "精神与学科",
+      "difficulty": "HARD",
+      "content": "20 世纪二三十年代南开大学创建、在中国经济研究中影响深远的机构是？",
+      "options": {
+        "A": "南开经济研究所",
+        "B": "南开法学院",
+        "C": "南开商学院",
+        "D": "南开金融学院"
+      },
+      "correctAnswer": "A",
+      "explanation": "南开经济研究所的前身是 1927 年成立的南开社会经济研究委员会，1931 年改称经济研究所，是中国最早从事经济研究并培养研究生的机构之一，奠定了南开经济学科的声誉。",
+      "sourceTitle": "南开校史讲义",
+      "sourceSection": "第三章 学科建设与布局调整"
+    },
+    {
+      "id": "q_nk_036",
+      "category": "精神与学科",
+      "difficulty": "MEDIUM",
+      "content": "张伯苓“公能”教育理念希望培养的是？",
+      "options": {
+        "A": "只重技术的专业人才",
+        "B": "爱国爱群、服务社会的公民",
+        "C": "以入仕为目标的官员",
+        "D": "以经商为唯一目标的商人"
+      },
+      "correctAnswer": "B",
+      "explanation": "“公能”教育强调公德与能力兼备，目标是培养爱国爱群、能服务国家与社会的公民。",
+      "sourceTitle": "南开校史讲义",
+      "sourceSection": "第四章 精神传统"
+    },
+    {
+      "id": "q_nk_037",
+      "category": "精神与学科",
+      "difficulty": "MEDIUM",
+      "content": "“爱国三问”提出的时代背景是？",
+      "options": {
+        "A": "民族危亡加深、华北局势紧张",
+        "B": "学校办学规模快速扩张",
+        "C": "筹备建校周年庆典活动",
+        "D": "学科调整与院系合并"
+      },
+      "correctAnswer": "A",
+      "explanation": "20 世纪 30 年代日本侵华加剧、华北局势危急，“爱国三问”正是在民族危亡加深的背景下提出。",
+      "sourceTitle": "南开校史讲义",
+      "sourceSection": "第四章 精神传统"
+    },
+    {
+      "id": "q_nk_038",
+      "category": "精神与学科",
+      "difficulty": "MEDIUM",
+      "content": "南开大学早期作为私立大学，其办学经费主要来源是？",
+      "options": {
+        "A": "创办人筹措及社会团体、各界人士捐助",
+        "B": "主要依靠国家财政的全额拨款",
+        "C": "几乎全部来自在校学生的学费",
+        "D": "长期依赖境外基金会的独家资助"
+      },
+      "correctAnswer": "A",
+      "explanation": "南开早期靠严修、张伯苓多方筹措与社会捐助维持，经费紧张是其长期面临的实际困难，也因此形成了精打细算、务实的办学风格。",
+      "sourceTitle": "南开校史讲义",
+      "sourceSection": "第一章 创校与早期发展"
+    },
+    {
+      "id": "q_nk_039",
+      "category": "精神与学科",
+      "difficulty": "MEDIUM",
+      "content": "南开大学校歌中“巍巍我南开精神”，通常用哪两个字来概括这一精神内核？",
+      "options": {
+        "A": "刚毅",
+        "B": "求是",
+        "C": "公能",
+        "D": "创新"
+      },
+      "correctAnswer": "C",
+      "explanation": "南开精神常以校训中的“公能”二字概括，即公德与能力兼备。",
+      "sourceTitle": "南开校史讲义",
+      "sourceSection": "第四章 精神传统"
+    },
+    {
+      "id": "q_nk_040",
+      "category": "精神与学科",
+      "difficulty": "EASY",
+      "content": "南开大学校徽上的英文校名是？",
+      "options": {
+        "A": "NANKAI COLLEGE",
+        "B": "TIENTSIN UNIVERSITY",
+        "C": "NANKAI ACADEMY",
+        "D": "NANKAI UNIVERSITY"
+      },
+      "correctAnswer": "D",
+      "explanation": "南开大学校徽为圆形，外圈标注中文校名「南开大学」、英文校名 NANKAI UNIVERSITY 与建校年份 1919。",
+      "sourceTitle": "南开校园文化读本",
+      "sourceSection": "第二章 校名与校园标识"
+    },
+    {
+      "id": "q_nk_041",
+      "type": "JUDGE",
+      "category": "创校与发展",
+      "difficulty": "EASY",
+      "content": "南开系列学校的前身，是 1904 年在天津创办的私立中学堂。",
+      "correctAnswer": "A",
+      "explanation": "严修与张伯苓于 1904 年 10 月 17 日创办私立中学堂，这是南开学校的前身；此后逐步扩展为包含中学、大学在内的南开系列学校体系。",
+      "sourceTitle": "南开校史讲义",
+      "sourceSection": "第一章 创校与早期发展"
+    },
+    {
+      "id": "q_nk_042",
+      "type": "BLANK",
+      "category": "创校与发展",
+      "difficulty": "MEDIUM",
+      "content": "南开系列学校的前身私立中学堂创办于______年。（只需填出年份）",
+      "correctAnswer": "1904 年",
+      "keywords": [
+        "1904",
+        "一九零四"
+      ],
+      "explanation": "严修与张伯苓于 1904 年 10 月 17 日创办私立中学堂，这一天后来被定为南开学校的校庆日。注意与南开大学的创办年 1919 区分开。",
+      "sourceTitle": "南开校史讲义",
+      "sourceSection": "第一章 创校与早期发展"
+    },
+    {
+      "id": "q_nk_043",
+      "type": "JUDGE",
+      "category": "创校与发展",
+      "difficulty": "MEDIUM",
+      "content": "南开大学 1919 年创办时，第一期学生共 60 人。",
+      "correctAnswer": "B",
+      "explanation": "第一期学生共 96 人，其中包含后来成为共和国总理的周恩来。「60 人」与史实不符。",
+      "sourceTitle": "南开校史讲义",
+      "sourceSection": "第一章 创校与早期发展"
+    },
+    {
+      "id": "q_nk_044",
+      "type": "BLANK",
+      "category": "创校与发展",
+      "difficulty": "HARD",
+      "content": "抗战爆发后，北京大学、清华大学与南开大学先在______（城市）组成国立长沙临时大学，次年才迁往昆明组建西南联合大学。",
+      "correctAnswer": "长沙",
+      "keywords": [
+        "长沙"
+      ],
+      "explanation": "1937 年三校先在长沙组成国立长沙临时大学；1938 年迁往昆明，组建国立西南联合大学。注意区分这两所联合办学机构的名称与先后顺序。",
+      "sourceTitle": "南开校史讲义",
+      "sourceSection": "第二章 抗战内迁与西南联大"
+    },
+    {
+      "id": "q_nk_045",
+      "type": "JUDGE",
+      "category": "创校与发展",
+      "difficulty": "MEDIUM",
+      "content": "抗战胜利后西南联合大学结束、三校复员，南开大学由私立改为国立，并于 1946 年 10 月在天津八里台复校。",
+      "correctAnswer": "A",
+      "explanation": "1946 年西南联合大学结束，三校复员。南开大学由私立改为国立，同年 10 月在天津八里台复校，八里台校区自此承载起学校的历史记忆。",
+      "sourceTitle": "南开校史讲义",
+      "sourceSection": "第一章 创校与早期发展"
+    },
+    {
+      "id": "q_nk_046",
+      "type": "BLANK",
+      "category": "创校与发展",
+      "difficulty": "HARD",
+      "content": "1938 年，国立西南联合大学在______（城市）正式开课。",
+      "correctAnswer": "昆明",
+      "keywords": [
+        "昆明"
+      ],
+      "explanation": "1938 年 5 月，三校在昆明组建的国立西南联合大学正式开课，校训为「刚毅坚卓」。此前三校曾在长沙组成国立长沙临时大学。",
+      "sourceTitle": "南开校史讲义",
+      "sourceSection": "第二章 抗战内迁与西南联大"
+    },
+    {
+      "id": "q_nk_047",
+      "type": "JUDGE",
+      "category": "创校与发展",
+      "difficulty": "HARD",
+      "content": "南开大学创办之初只设理科，文、商两科是后来才增设的。",
+      "correctAnswer": "B",
+      "explanation": "创办之初即设文、理、商三科，其后增设矿科，形成文理商并重的基本格局。「只设理科」的说法与史实不符。",
+      "sourceTitle": "南开校史讲义",
+      "sourceSection": "第一章 创校与早期发展"
+    },
+    {
+      "id": "q_nk_048",
+      "type": "BLANK",
+      "category": "创校与发展",
+      "difficulty": "MEDIUM",
+      "content": "南开大学创办之初设文、理、商三科，其后增设的是______科。",
+      "correctAnswer": "矿科",
+      "keywords": [
+        "矿"
+      ],
+      "explanation": "创办之初设文、理、商三科，其后增设矿科。校钟铭文「文以治国，理以强国，商以富国」正是这一学科格局的写照。",
+      "sourceTitle": "南开校史讲义",
+      "sourceSection": "第一章 创校与早期发展"
+    },
+    {
+      "id": "q_nk_049",
+      "type": "JUDGE",
+      "category": "创校与发展",
+      "difficulty": "HARD",
+      "content": "南开是抗战中最早被毁的大学之一，但南开师生并未内迁，而是留在天津坚持办学。",
+      "correctAnswer": "B",
+      "explanation": "1937 年 7 月校园遭日军炮击轰炸，图书馆、教学楼等校舍严重被毁，师生在极短时间内组织南迁。南开是抗战中最早被毁、也最早开始内迁的大学之一。",
+      "sourceTitle": "南开校史讲义",
+      "sourceSection": "第二章 抗战内迁与西南联大"
+    },
+    {
+      "id": "q_nk_050",
+      "type": "BLANK",
+      "category": "创校与发展",
+      "difficulty": "MEDIUM",
+      "content": "1946 年 10 月，南开大学在天津______校区复校。",
+      "correctAnswer": "八里台",
+      "keywords": [
+        "八里台"
+      ],
+      "explanation": "1946 年 10 月南开大学在天津八里台复校。八里台校区承载老校区的历史记忆与人文气息，与 2015 年启用的津南校区并行。",
+      "sourceTitle": "南开校史讲义",
+      "sourceSection": "第一章 创校与早期发展"
+    },
+    {
+      "id": "q_nk_051",
+      "type": "BLANK",
+      "category": "人物与校友",
+      "difficulty": "HARD",
+      "content": "被尊为「南开校父」的严修，字______。",
+      "correctAnswer": "范孙",
+      "keywords": [
+        "范孙"
+      ],
+      "explanation": "严修字范孙，是清末翰林出身的近代教育家，与张伯苓共同创办南开系列学校，被尊为「南开校父」。",
+      "sourceTitle": "南开人物志",
+      "sourceSection": "第一章 张伯苓与严修"
+    },
+    {
+      "id": "q_nk_052",
+      "type": "JUDGE",
+      "category": "人物与校友",
+      "difficulty": "HARD",
+      "content": "校史中常以「严修奠基、张伯苓办学」来概括两位创办人的分工。",
+      "correctAnswer": "A",
+      "explanation": "严修争取社会支持与办学资源，张伯苓落实办学与教育理念，两人形成互补。校史因此以「严修奠基、张伯苓办学」概括这一分工。",
+      "sourceTitle": "南开人物志",
+      "sourceSection": "第一章 张伯苓与严修"
+    },
+    {
+      "id": "q_nk_053",
+      "type": "JUDGE",
+      "category": "人物与校友",
+      "difficulty": "MEDIUM",
+      "content": "张伯苓办南开时只重视智育，并不赞成学生参加体育活动。",
+      "correctAnswer": "B",
+      "explanation": "张伯苓主张教育救国，认为国家要强盛必须依靠教育培养人才，并强调德、智、体、群并重，尤其重视体育与团体活动。",
+      "sourceTitle": "南开人物志",
+      "sourceSection": "第一章 张伯苓与严修"
+    },
+    {
+      "id": "q_nk_054",
+      "type": "BLANK",
+      "category": "人物与校友",
+      "difficulty": "MEDIUM",
+      "content": "长期主持南开新剧团、把现代话剧引入南开校园的是______。",
+      "correctAnswer": "张彭春",
+      "keywords": [
+        "张彭春"
+      ],
+      "explanation": "张彭春是张伯苓之弟，著名戏剧家与外交家，长期主持南开新剧团，推动了校园戏剧的繁荣，也影响了后来在南开求学的曹禺。",
+      "sourceTitle": "南开人物志",
+      "sourceSection": "第一章 张伯苓与严修"
+    },
+    {
+      "id": "q_nk_055",
+      "type": "BLANK",
+      "category": "人物与校友",
+      "difficulty": "MEDIUM",
+      "content": "周恩来 1919 年入南开大学文科，是第一期学生，学号为______号。",
+      "correctAnswer": "62 号",
+      "keywords": [
+        "62"
+      ],
+      "explanation": "周恩来 1919 年入南开大学文科，是第一期学生，学号 62 号，1920 年赴法勤工俭学，后来成为中华人民共和国的第一任总理。",
+      "sourceTitle": "南开人物志",
+      "sourceSection": "第二章 杰出校友"
+    },
+    {
+      "id": "q_nk_056",
+      "type": "JUDGE",
+      "category": "人物与校友",
+      "difficulty": "MEDIUM",
+      "content": "陈省身 1930 年毕业于南开大学数学系，师从姜立夫。",
+      "correctAnswer": "A",
+      "explanation": "陈省身 1930 年毕业于南开大学数学系，师从姜立夫，后成为世界级微分几何大师，被誉为「微分几何之父」，并于 1985 年创建南开数学研究所。",
+      "sourceTitle": "南开人物志",
+      "sourceSection": "第二章 杰出校友"
+    },
+    {
+      "id": "q_nk_057",
+      "type": "BLANK",
+      "category": "人物与校友",
+      "difficulty": "HARD",
+      "content": "著名话剧《雷雨》的作者曹禺，本名是______。",
+      "correctAnswer": "万家宝",
+      "keywords": [
+        "万家宝"
+      ],
+      "explanation": "曹禺本名万家宝，曾就读于南开中学与南开大学，在南开求学期间参加新剧团活动，南开的校园戏剧氛围对他的艺术道路产生了重要作用。",
+      "sourceTitle": "南开人物志",
+      "sourceSection": "第二章 杰出校友"
+    },
+    {
+      "id": "q_nk_058",
+      "type": "JUDGE",
+      "category": "人物与校友",
+      "difficulty": "HARD",
+      "content": "南开数学学科由姜立夫在 20 世纪 20 年代创建，他培养的学生中包括陈省身。",
+      "correctAnswer": "A",
+      "explanation": "姜立夫是南开数学学科的创建者，20 世纪 20 年代建立南开数学系（算学系），培养了一批后来具有国际影响的数学人才，其学生中包括陈省身。",
+      "sourceTitle": "南开人物志",
+      "sourceSection": "第三章 学术名家"
+    },
+    {
+      "id": "q_nk_059",
+      "type": "BLANK",
+      "category": "人物与校友",
+      "difficulty": "MEDIUM",
+      "content": "1919 年入南开大学文科的周恩来，1920 年赴______勤工俭学。",
+      "correctAnswer": "法国",
+      "keywords": [
+        "法国",
+        "赴法"
+      ],
+      "explanation": "周恩来是南开大学第一期学生，学号 62 号，1920 年赴法勤工俭学。南开系列学校是周恩来青年时期重要的求学地。",
+      "sourceTitle": "南开人物志",
+      "sourceSection": "第二章 杰出校友"
+    },
+    {
+      "id": "q_nk_060",
+      "type": "JUDGE",
+      "category": "人物与校友",
+      "difficulty": "EASY",
+      "content": "曹禺虽是著名戏剧家，但在南开求学期间并未参加新剧团的活动。",
+      "correctAnswer": "B",
+      "explanation": "曹禺本名万家宝，曾就读于南开中学与南开大学，在南开求学期间参加新剧团活动，深受南开戏剧传统的影响。",
+      "sourceTitle": "南开人物志",
+      "sourceSection": "第二章 杰出校友"
+    },
+    {
+      "id": "q_nk_061",
+      "type": "BLANK",
+      "category": "校园与文化",
+      "difficulty": "MEDIUM",
+      "content": "校训「允公允能」中的「能」，指的是服务社会的______。",
+      "correctAnswer": "能力",
+      "keywords": [
+        "能力"
+      ],
+      "explanation": "「公」指爱国爱群之公德，「能」指服务社会之能力，「日新月异」强调不断革新进取的精神。三者合起来就是张伯苓提出的「公能」教育理念。",
+      "sourceTitle": "南开校园文化读本",
+      "sourceSection": "第一章 校训与校歌"
+    },
+    {
+      "id": "q_nk_062",
+      "type": "BLANK",
+      "category": "校园与文化",
+      "difficulty": "EASY",
+      "content": "南开大学校歌开头是「渤海之滨，______之津」。",
+      "correctAnswer": "白河",
+      "keywords": [
+        "白河"
+      ],
+      "explanation": "校歌开头「渤海之滨，白河之津，巍巍我南开精神」，点明学校地处天津的地理与精神渊源。",
+      "sourceTitle": "南开校园文化读本",
+      "sourceSection": "第一章 校训与校歌"
+    },
+    {
+      "id": "q_nk_063",
+      "type": "JUDGE",
+      "category": "校园与文化",
+      "difficulty": "HARD",
+      "content": "校钟铭文「文以治国，理以强国，商以富国」与建校初期设文、理、商三科的格局相互呼应。",
+      "correctAnswer": "A",
+      "explanation": "校钟铭文表达办学追求，体现文、理、商并重的理念，与建校初期设文、理、商三科的格局相互呼应。",
+      "sourceTitle": "南开校园文化读本",
+      "sourceSection": "第二章 校名与校园标识"
+    },
+    {
+      "id": "q_nk_064",
+      "type": "BLANK",
+      "category": "校园与文化",
+      "difficulty": "HARD",
+      "content": "南开大学校钟铭文的中间一句是「理以______」。",
+      "correctAnswer": "强国",
+      "keywords": [
+        "强国"
+      ],
+      "explanation": "校钟铭文为「文以治国，理以强国，商以富国」，三句分别对应文、理、商三科，表达把学问用于国事的办学追求。",
+      "sourceTitle": "南开校园文化读本",
+      "sourceSection": "第二章 校名与校园标识"
+    },
+    {
+      "id": "q_nk_065",
+      "type": "JUDGE",
+      "category": "校园与文化",
+      "difficulty": "MEDIUM",
+      "content": "南开大学校徽为圆角方形，外圈标注校名与建校年份。",
+      "correctAnswer": "B",
+      "explanation": "校徽为圆形，外圈标注「南开大学 NANKAI UNIVERSITY」与建校年份 1919。「圆角方形」与事实不符。",
+      "sourceTitle": "南开校园文化读本",
+      "sourceSection": "第二章 校名与校园标识"
+    },
+    {
+      "id": "q_nk_066",
+      "type": "BLANK",
+      "category": "校园与文化",
+      "difficulty": "HARD",
+      "content": "南开大学八里台校区主楼以对称布局和方形的______为标志。",
+      "correctAnswer": "钟楼",
+      "keywords": [
+        "钟楼"
+      ],
+      "explanation": "八里台主楼以对称布局与方形钟楼为标志；津南校区图书馆则以红砖立面与居中的校徽为标志。",
+      "sourceTitle": "南开校园文化读本",
+      "sourceSection": "第三章 校园建筑与景观"
+    },
+    {
+      "id": "q_nk_067",
+      "type": "JUDGE",
+      "category": "校园与文化",
+      "difficulty": "MEDIUM",
+      "content": "南开校歌只在建校纪念日演唱，开学典礼与毕业典礼并不使用。",
+      "correctAnswer": "B",
+      "explanation": "校歌词句强调南开精神与家国责任，是开学典礼、毕业典礼等正式场合的重要环节，并非只在建校纪念日演唱。",
+      "sourceTitle": "南开校园文化读本",
+      "sourceSection": "第一章 校训与校歌"
+    },
+    {
+      "id": "q_nk_068",
+      "type": "BLANK",
+      "category": "校园与文化",
+      "difficulty": "HARD",
+      "content": "八里台校区承载学校的历史记忆，而______校区承担新时期的办学扩容与学科发展任务。",
+      "correctAnswer": "津南",
+      "keywords": [
+        "津南"
+      ],
+      "explanation": "八里台校区承载老校区的历史记忆与人文气息，2015 年启用的津南校区则承担新时期的办学扩容与学科发展任务，两者并行。",
+      "sourceTitle": "南开校园文化读本",
+      "sourceSection": "第三章 校园建筑与景观"
+    },
+    {
+      "id": "q_nk_069",
+      "type": "JUDGE",
+      "category": "校园与文化",
+      "difficulty": "EASY",
+      "content": "南开大学津南校区比八里台校区启用得更晚。",
+      "correctAnswer": "A",
+      "explanation": "八里台校区自 1946 年复校起承载学校历史记忆；津南校区于 2015 年启用，启用时间明显更晚。",
+      "sourceTitle": "南开校园文化读本",
+      "sourceSection": "第三章 校园建筑与景观"
+    },
+    {
+      "id": "q_nk_070",
+      "type": "JUDGE",
+      "category": "校园与文化",
+      "difficulty": "HARD",
+      "content": "校徽上的 1919 对应南开大学的创办年份，需要与南开学校 1904 年的起点区分开。",
+      "correctAnswer": "A",
+      "explanation": "1904 年是南开系列学校的起点，也是校庆日 10 月 17 日的由来；1919 年是南开大学的创办年，也是校徽上的年份。两个数字极易混淆，作答时应以学校的实际归属为准。",
+      "sourceTitle": "南开校园文化读本",
+      "sourceSection": "第二章 校名与校园标识"
+    },
+    {
+      "id": "q_nk_071",
+      "type": "BLANK",
+      "category": "精神与学科",
+      "difficulty": "HARD",
+      "content": "国立西南联合大学培养出后来获得诺贝尔物理学奖的杨振宁、______等杰出人才。",
+      "correctAnswer": "李政道",
+      "keywords": [
+        "李政道"
+      ],
+      "explanation": "西南联大在极其艰苦的条件下坚持办学，培养出一大批杰出人才，其中包括后来获得诺贝尔物理学奖的杨振宁、李政道。",
+      "sourceTitle": "南开校史讲义",
+      "sourceSection": "第二章 抗战内迁与西南联大"
+    },
+    {
+      "id": "q_nk_072",
+      "type": "JUDGE",
+      "category": "精神与学科",
+      "difficulty": "MEDIUM",
+      "content": "张伯苓 1935 年提出的「爱国三问」，如今已不再被提及。",
+      "correctAnswer": "B",
+      "explanation": "「你是中国人吗？你爱中国吗？你愿意中国好吗？」这三问成为南开爱国主义传统最凝练的表达，至今仍在开学典礼等场合被重提。",
+      "sourceTitle": "南开校史讲义",
+      "sourceSection": "第四章 精神传统"
+    },
+    {
+      "id": "q_nk_073",
+      "type": "BLANK",
+      "category": "精神与学科",
+      "difficulty": "MEDIUM",
+      "content": "在入选「双一流」之前，南开大学已经是「211 工程」和「______工程」重点建设高校。",
+      "correctAnswer": "985 工程",
+      "keywords": [
+        "985",
+        "九八五"
+      ],
+      "explanation": "南开大学是「211 工程」「985 工程」重点建设高校；2017 年国家启动「双一流」建设，南开入选一流大学建设高校 A 类。",
+      "sourceTitle": "南开校史讲义",
+      "sourceSection": "第三章 学科建设与布局调整"
+    },
+    {
+      "id": "q_nk_074",
+      "type": "JUDGE",
+      "category": "精神与学科",
+      "difficulty": "MEDIUM",
+      "content": "南开师生在西南联大期间放弃了务实的学风，转而偏重空谈。",
+      "correctAnswer": "B",
+      "explanation": "西南联大在艰苦条件下坚持办学，南开师生在联大期间延续了务实的学风与爱国传统，这也是南开精神在战火中的延续。",
+      "sourceTitle": "南开校史讲义",
+      "sourceSection": "第二章 抗战内迁与西南联大"
+    },
+    {
+      "id": "q_nk_075",
+      "type": "BLANK",
+      "category": "精神与学科",
+      "difficulty": "MEDIUM",
+      "content": "张伯苓主张「教育救国」，认为国家要强盛，必须依靠教育培养______。",
+      "correctAnswer": "人才",
+      "keywords": [
+        "人才"
+      ],
+      "explanation": "张伯苓早年接受新式教育，主张教育救国，认为国家要强盛必须依靠教育培养人才，这一信念贯穿他办学的全过程。",
+      "sourceTitle": "南开人物志",
+      "sourceSection": "第一章 张伯苓与严修"
+    },
+    {
+      "id": "q_nk_076",
+      "type": "BLANK",
+      "category": "精神与学科",
+      "difficulty": "HARD",
+      "content": "南开化学建有______等国家级科研平台，长期处于国内前列。",
+      "correctAnswer": "元素有机化学",
+      "keywords": [
+        "元素有机化学",
+        "元素有机"
+      ],
+      "explanation": "南开化学在教学与科研上均有深厚积累，建有元素有机化学等国家级科研平台，长期处于国内前列；杨石先长期在南开任教并担任校长，是中国农药化学的重要奠基人之一。",
+      "sourceTitle": "南开校史讲义",
+      "sourceSection": "第三章 学科建设与布局调整"
+    },
+    {
+      "id": "q_nk_077",
+      "type": "JUDGE",
+      "category": "精神与学科",
+      "difficulty": "MEDIUM",
+      "content": "南开大学在数学、化学、经济、历史等基础学科上有长期积累。",
+      "correctAnswer": "A",
+      "explanation": "1952 年全国院系调整后，南开大学被定位为文理综合大学，数学、化学、经济、历史等学科基础由此进一步夯实，此后数十年形成鲜明的学科特色。",
+      "sourceTitle": "南开校史讲义",
+      "sourceSection": "第三章 学科建设与布局调整"
+    },
+    {
+      "id": "q_nk_078",
+      "type": "BLANK",
+      "category": "精神与学科",
+      "difficulty": "MEDIUM",
+      "content": "陈省身创建南开数学研究所并担任所长是在______年。",
+      "correctAnswer": "1985 年",
+      "keywords": [
+        "1985",
+        "一九八五"
+      ],
+      "explanation": "1985 年，陈省身创建南开数学研究所并担任所长，推动南开数学学科走向国际前沿。他 1930 年毕业于南开大学数学系，师从姜立夫。",
+      "sourceTitle": "南开校史讲义",
+      "sourceSection": "第三章 学科建设与布局调整"
+    },
+    {
+      "id": "q_nk_079",
+      "type": "JUDGE",
+      "category": "精神与学科",
+      "difficulty": "HARD",
+      "content": "「公能」精神只停留在校训的文字上，并未影响南开的课程设置与学科建设。",
+      "correctAnswer": "B",
+      "explanation": "「公能」教育理念贯穿南开的课程与校园风气；在学科上则沉淀为数学、化学、经济、历史等优势方向的长期积累，形成务实精进的传统。",
+      "sourceTitle": "南开校史讲义",
+      "sourceSection": "第四章 精神传统"
+    },
+    {
+      "id": "q_nk_080",
+      "type": "JUDGE",
+      "category": "精神与学科",
+      "difficulty": "HARD",
+      "content": "「刚毅坚卓」是国立西南联合大学的校训，不是南开大学的校训。",
+      "correctAnswer": "A",
+      "explanation": "南开大学校训是「允公允能，日新月异」；「刚毅坚卓」属于国立西南联合大学。两者常被混淆，作答时应以学校的实际归属为准。",
+      "sourceTitle": "南开校史讲义",
+      "sourceSection": "第二章 抗战内迁与西南联大"
+    }
+  ]
+}

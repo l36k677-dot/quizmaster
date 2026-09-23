@@ -1,0 +1,405 @@
+{% extends "base.html" %}
+{% block title %}题库管理{% endblock %}
+{% block page_heading %}题库管理{% endblock %}
+{% block page_crumb %}管理端 · 新增、编辑、启停题目；历史会话使用快照，编辑不影响旧成绩{% endblock %}
+
+{% block content %}
+<div class="grid grid-4">
+  <div class="stat">
+    <div class="stat-label">题目总数</div>
+    <div class="stat-value">{{ stats.total }}<small>道</small></div>
+    <div class="stat-foot">启用 {{ stats.active }} · 停用 {{ stats.inactive }}</div>
+  </div>
+  {% for row in stats.byCategory[:3] %}
+  <div class="stat">
+    <div class="stat-label">{{ row.name }}</div>
+    <div class="stat-value">{{ row.count }}<small>道</small></div>
+    <div class="stat-foot">分类可用题目</div>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="grid grid-3" style="margin-top:14px">
+  {% for row in stats.byType %}
+  <div class="stat">
+    <div class="stat-label">{{ row.label }}</div>
+    <div class="stat-value">{{ row.count }}<small>道</small></div>
+    <div class="stat-foot">
+      {% if row.qtype == 'BLANK' %}关键字命中即算对
+      {% elif row.qtype == 'JUDGE' %}正确 / 错误两选
+      {% else %}四选项 A–D{% endif %}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="card reveal" style="margin-top:18px">
+  <div class="card-title"><h3>筛选</h3></div>
+  <form method="get" action="/admin/questions">
+    <div class="form-row">
+      <div class="field">
+        <label for="keyword">关键词</label>
+        <input id="keyword" name="keyword" type="text" value="{{ filters.keyword }}" placeholder="题干包含…" />
+      </div>
+      <div class="field">
+        <label for="categoryId">分类</label>
+        <select id="categoryId" name="categoryId">
+          <option value="">全部分类</option>
+          {% for c in categories %}
+          <option value="{{ c.id }}" {% if filters.categoryId == c.id %}selected{% endif %}>{{ c.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="field">
+        <label for="difficulty">难度</label>
+        <select id="difficulty" name="difficulty">
+          <option value="">不限</option>
+          <option value="EASY" {% if filters.difficulty == 'EASY' %}selected{% endif %}>简单</option>
+          <option value="MEDIUM" {% if filters.difficulty == 'MEDIUM' %}selected{% endif %}>中等</option>
+          <option value="HARD" {% if filters.difficulty == 'HARD' %}selected{% endif %}>困难</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="qtype">题型</label>
+        <select id="qtype" name="qtype">
+          <option value="">全部题型</option>
+          <option value="SINGLE" {% if filters.qtype == 'SINGLE' %}selected{% endif %}>单选题</option>
+          <option value="JUDGE" {% if filters.qtype == 'JUDGE' %}selected{% endif %}>判断题</option>
+          <option value="BLANK" {% if filters.qtype == 'BLANK' %}selected{% endif %}>填空题</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="field" style="display:flex;align-items:flex-end;gap:10px">
+        <button class="btn btn-primary" type="submit">应用筛选</button>
+        <a class="btn" href="/admin/questions">重置</a>
+      </div>
+    </div>
+  </form>
+</div>
+
+<div class="card reveal">
+  <div class="card-title">
+    <h3>题目列表（{{ listing.total }} 条）</h3>
+    <button class="btn btn-gold btn-sm" id="new-btn">新增题目</button>
+  </div>
+
+  {% if listing['items'] %}
+  <div class="table-wrap">
+    <table class="data">
+      <thead>
+        <tr><th>题干</th><th>题型</th><th>分类</th><th>难度</th><th>答案</th><th>状态</th><th>更新时间</th><th>操作</th></tr>
+      </thead>
+      <tbody>
+        {% for q in listing['items'] %}
+        <tr>
+          <td style="max-width:340px">{{ q.content }}</td>
+          <td><span class="tag">{{ q.qtypeLabel }}</span></td>
+          <td>{{ q.categoryName }}</td>
+          <td><span class="tag {{ 'tag-easy' if q.difficulty == 'EASY' else ('tag-medium' if q.difficulty == 'MEDIUM' else 'tag-hard') }}">{{ q.difficulty | difficulty_label }}</span></td>
+          <td class="num">
+            {% if q.qtype == 'BLANK' %}
+            <div>{{ q.correctAnswer }}</div>
+            <div class="hint-text">要点：{{ q.keywords | join('、') }}</div>
+            {% else %}{{ q.correctAnswer }}{% endif %}
+          </td>
+          <td><span class="tag {{ 'tag-ok' if q.isActive else 'tag-danger' }}">{{ '启用' if q.isActive else '停用' }}</span></td>
+          <td class="hint-text">{{ q.updatedAt[:10] if q.updatedAt else '-' }}</td>
+          <td style="white-space:nowrap">
+            <button class="btn btn-sm edit-btn"
+                    data-id="{{ q.id }}"
+                    data-qtype="{{ q.qtype }}"
+                    data-keywords="{{ q.keywords | join('、') }}"
+                    data-content="{{ q.content }}"
+                    data-category="{{ q.categoryId }}"
+                    data-difficulty="{{ q.difficulty }}"
+                    data-answer="{{ q.correctAnswer }}"
+                    data-explanation="{{ q.explanation }}"
+                    data-source-title="{{ q.sourceTitle or '' }}"
+                    data-source-section="{{ q.sourceSection or '' }}"
+                    data-a="{{ q.options.A or '' }}"
+                    data-b="{{ q.options.B or '' }}"
+                    data-c="{{ q.options.C or '' }}"
+                    data-d="{{ q.options.D or '' }}">编辑</button>
+            <button class="btn btn-sm toggle-btn" data-id="{{ q.id }}" data-active="{{ 'true' if q.isActive else 'false' }}">
+              {{ '停用' if q.isActive else '启用' }}
+            </button>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {% if listing.totalPages > 1 %}
+  <div class="pager">
+    {% if listing.page > 1 %}
+    <a class="btn btn-sm" href="/admin/questions?page={{ listing.page - 1 }}&keyword={{ filters.keyword }}&categoryId={{ filters.categoryId }}&difficulty={{ filters.difficulty }}">上一页</a>
+    {% endif %}
+    <span class="info">第 {{ listing.page }} / {{ listing.totalPages }} 页</span>
+    {% if listing.page < listing.totalPages %}
+    <a class="btn btn-sm" href="/admin/questions?page={{ listing.page + 1 }}&keyword={{ filters.keyword }}&categoryId={{ filters.categoryId }}&difficulty={{ filters.difficulty }}">下一页</a>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  {% else %}
+  <div class="empty"><strong>没有匹配的题目</strong>调整筛选条件，或点击「新增题目」补充题库。</div>
+  {% endif %}
+</div>
+
+<div class="card" id="editor-card" style="display:none">
+  <div class="card-title">
+    <h3 id="editor-title">新增题目</h3>
+    <button class="btn btn-ghost btn-sm" id="cancel-btn">收起</button>
+  </div>
+  <form id="question-form">
+    <input type="hidden" id="f-id" />
+    <div class="form-row">
+      <div class="field">
+        <label for="f-qtype">题型</label>
+        <select id="f-qtype">
+          <option value="SINGLE">单选题（四选项 A–D）</option>
+          <option value="JUDGE">判断题（正确 / 错误）</option>
+          <option value="BLANK">填空题（关键字判分）</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="f-difficulty">难度</label>
+        <select id="f-difficulty">
+          <option value="EASY">简单</option>
+          <option value="MEDIUM" selected>中等</option>
+          <option value="HARD">困难</option>
+        </select>
+      </div>
+    </div>
+    <div class="field">
+      <label for="f-content">题干</label>
+      <textarea id="f-content" required placeholder="请输入题干"></textarea>
+      <p class="hint-text" id="qtype-tip">填空题建议用「______」标出要填的位置，并明确提示答什么（如「只需填出年份」）。</p>
+    </div>
+
+    {# ---- 单选题：四选项 + 标准答案 A–D ---- #}
+    <div id="group-single">
+      <div class="form-row">
+        <div class="field"><label for="f-a">选项 A</label><input id="f-a" type="text" /></div>
+        <div class="field"><label for="f-b">选项 B</label><input id="f-b" type="text" /></div>
+      </div>
+      <div class="form-row">
+        <div class="field"><label for="f-c">选项 C</label><input id="f-c" type="text" /></div>
+        <div class="field"><label for="f-d">选项 D</label><input id="f-d" type="text" /></div>
+      </div>
+      <div class="form-row">
+        <div class="field">
+          <label for="f-answer">标准答案</label>
+          <select id="f-answer">
+            <option value="A">A</option><option value="B">B</option>
+            <option value="C">C</option><option value="D">D</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    {# ---- 判断题：只有「正确 / 错误」，复用 A/B 键位 ---- #}
+    <div id="group-judge" style="display:none">
+      <div class="form-row">
+        <div class="field">
+          <label for="f-judge-answer">标准答案</label>
+          <select id="f-judge-answer">
+            <option value="A">正确（A）</option>
+            <option value="B">错误（B）</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    {# ---- 填空题：参考答案（展示用）+ 关键字（判分用） ---- #}
+    <div id="group-blank" style="display:none">
+      <div class="field">
+        <label for="f-reference">参考答案（展示用，可与关键字不同）</label>
+        <input id="f-reference" type="text" maxlength="120" placeholder="如：1919 年" />
+      </div>
+      <div class="field">
+        <label for="f-keywords">判分关键字（顿号分隔，命中任意一个即算对）</label>
+        <input id="f-keywords" type="text" placeholder="如：1919、一九一九" />
+        <p class="hint-text">判分宽松：答出任一关键字、且没有污言秽语、也不明显离谱（超长粘贴、单字灌水），即算答对。</p>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="field">
+        <label for="f-category">分类</label>
+        <select id="f-category">
+          {% for c in categories %}<option value="{{ c.id }}">{{ c.name }}</option>{% endfor %}
+        </select>
+      </div>
+      <div class="field">
+        <label for="f-active">状态</label>
+        <select id="f-active"><option value="true">启用</option><option value="false">停用</option></select>
+      </div>
+    </div>
+    <div class="field">
+      <label for="f-explanation">标准解析（必填，不能只写正确选项）</label>
+      <textarea id="f-explanation" required placeholder="说明正确答案的依据，并指出常见错误选项的问题"></textarea>
+    </div>
+    <div class="form-row">
+      <div class="field"><label for="f-source-title">来源资料（可选）</label><input id="f-source-title" type="text" placeholder="如：南开校史讲义" /></div>
+      <div class="field"><label for="f-source-section">来源章节（可选）</label><input id="f-source-section" type="text" placeholder="如：第一章 创校与早期发展" /></div>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-gold" type="submit" id="save-btn">保存题目</button>
+      <span class="hint-text">保存后不影响历史成绩，因为历史会话使用创建时的题目快照。</span>
+    </div>
+  </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const card = document.getElementById('editor-card');
+  const form = document.getElementById('question-form');
+  const title = document.getElementById('editor-title');
+
+  const GROUPS = {
+    SINGLE: document.getElementById('group-single'),
+    JUDGE: document.getElementById('group-judge'),
+    BLANK: document.getElementById('group-blank'),
+  };
+  const TIPS = {
+    SINGLE: '单选题：四个选项都要填写，标准答案取 A–D 之一。',
+    JUDGE: '判断题：题干写成一句可判断真假的陈述，标准答案选「正确」或「错误」。',
+    BLANK: '填空题：建议用「______」标出要填的位置，并明确提示答什么（如「只需填出年份」）。',
+  };
+
+  // 只显示当前题型需要的字段。留着一个填了也不生效的输入框，
+  // 比隐藏它更容易让人误以为填了有用。
+  function syncQtype() {
+    const qtype = document.getElementById('f-qtype').value;
+    Object.entries(GROUPS).forEach(([key, el]) => {
+      if (el) el.style.display = key === qtype ? '' : 'none';
+    });
+    const tip = document.getElementById('qtype-tip');
+    if (tip) tip.textContent = TIPS[qtype] || '';
+  }
+
+  document.getElementById('f-qtype').addEventListener('change', syncQtype);
+
+  function openEditor(data) {
+    const qtype = (data.qtype || 'SINGLE').toUpperCase();
+    document.getElementById('f-id').value = data.id || '';
+    document.getElementById('f-qtype').value = qtype;
+    document.getElementById('f-content').value = data.content || '';
+    document.getElementById('f-a').value = data.a || '';
+    document.getElementById('f-b').value = data.b || '';
+    document.getElementById('f-c').value = data.c || '';
+    document.getElementById('f-d').value = data.d || '';
+    document.getElementById('f-answer').value = (qtype === 'SINGLE' && data.answer) ? data.answer : 'A';
+    document.getElementById('f-judge-answer').value = (qtype === 'JUDGE' && data.answer) ? data.answer : 'A';
+    document.getElementById('f-reference').value = qtype === 'BLANK' ? (data.answer || '') : '';
+    document.getElementById('f-keywords').value = data.keywords || '';
+    document.getElementById('f-difficulty').value = data.difficulty || 'MEDIUM';
+    document.getElementById('f-category').value = data.category || '';
+    document.getElementById('f-explanation').value = data.explanation || '';
+    document.getElementById('f-source-title').value = data.sourceTitle || '';
+    document.getElementById('f-source-section').value = data.sourceSection || '';
+    document.getElementById('f-active').value = data.active === false ? 'false' : 'true';
+    syncQtype();
+    title.textContent = data.id ? '编辑题目' : '新增题目';
+    card.style.display = 'block';
+    card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  document.getElementById('new-btn').addEventListener('click', () => openEditor({}));
+  document.getElementById('cancel-btn').addEventListener('click', () => { card.style.display = 'none'; });
+
+  document.addEventListener('click', async (event) => {
+    const editBtn = event.target.closest('.edit-btn');
+    if (editBtn) {
+      const d = editBtn.dataset;
+      openEditor({
+        id: d.id, qtype: d.qtype, keywords: d.keywords,
+        content: d.content, category: d.category, difficulty: d.difficulty,
+        answer: d.answer, explanation: d.explanation, a: d.a, b: d.b, c: d.c, d: d.d,
+        sourceTitle: d.sourceTitle, sourceSection: d.sourceSection,
+      });
+      return;
+    }
+    const toggleBtn = event.target.closest('.toggle-btn');
+    if (toggleBtn) {
+      const next = toggleBtn.dataset.active !== 'true';
+      try {
+        await API.patch(`/api/admin/questions/${toggleBtn.dataset.id}/active`, { isActive: next });
+        toast(next ? '题目已启用' : '题目已停用', 'ok');
+        window.location.reload();
+      } catch (err) {
+        toast(err.message, 'err');
+      }
+    }
+  });
+
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const id = document.getElementById('f-id').value;
+    const qtype = document.getElementById('f-qtype').value;
+    const content = document.getElementById('f-content').value.trim();
+
+    // 按题型收集字段。选项输入框不再加 required —— 填空题和判断题
+    // 本来就没有选项，靠浏览器必填校验会把它们一起堵死。
+    let options = {};
+    let correctAnswer = '';
+    let keywords = [];
+    if (qtype === 'SINGLE') {
+      options = {
+        A: document.getElementById('f-a').value.trim(),
+        B: document.getElementById('f-b').value.trim(),
+        C: document.getElementById('f-c').value.trim(),
+        D: document.getElementById('f-d').value.trim(),
+      };
+      if (Object.values(options).some((value) => !value)) {
+        toast('单选题的四个选项都要填写', 'err');
+        return;
+      }
+      correctAnswer = document.getElementById('f-answer').value;
+    } else if (qtype === 'JUDGE') {
+      correctAnswer = document.getElementById('f-judge-answer').value;
+    } else {
+      correctAnswer = document.getElementById('f-reference').value.trim();
+      keywords = document.getElementById('f-keywords').value
+        .split(/[、,，;；\s]+/).map((w) => w.trim()).filter(Boolean);
+      if (!correctAnswer) { toast('填空题必须填写参考答案', 'err'); return; }
+      if (!keywords.length) { toast('填空题至少需要一个关键字，否则无法判分', 'err'); return; }
+    }
+
+    const payload = {
+      content: content,
+      qtype: qtype,
+      options: options,
+      correctAnswer: correctAnswer,
+      keywords: keywords,
+      explanation: document.getElementById('f-explanation').value.trim(),
+      difficulty: document.getElementById('f-difficulty').value,
+      categoryId: document.getElementById('f-category').value,
+      sourceTitle: document.getElementById('f-source-title').value.trim() || null,
+      sourceSection: document.getElementById('f-source-section').value.trim() || null,
+      isActive: document.getElementById('f-active').value === 'true',
+    };
+    const button = document.getElementById('save-btn');
+    button.disabled = true;
+    try {
+      if (id) {
+        await API.put(`/api/admin/questions/${id}`, payload);
+        toast('题目已更新', 'ok');
+      } else {
+        await API.post('/api/admin/questions', payload);
+        toast('题目已创建', 'ok');
+      }
+      window.location.reload();
+    } catch (err) {
+      toast(err.message, 'err');
+      button.disabled = false;
+    }
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}排行榜{% endblock %}
+{% block page_heading %}排行榜{% endblock %}
+{% block page_crumb %}按用户聚合终态会话，排序规则：{{ data.sortRule }}{% endblock %}
+
+{% block content %}
+{% if data.myRank %}
+<div class="card reveal">
+  <div class="card-title">
+    <h3>我的名次</h3>
+    <span class="hint">共 {{ data.totalPlayers }} 位参与者</span>
+  </div>
+  <div class="grid grid-4">
+    <div class="stat">
+      <div class="stat-label">当前名次</div>
+      <div class="stat-value">{{ data.myRank.rank }}<small>/ {{ data.totalPlayers }}</small></div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">最佳分数</div>
+      <div class="stat-value">{{ data.myRank.bestScore }}<small>分</small></div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">平均正确率</div>
+      <div class="stat-value">{{ (data.myRank.avgCorrectRate * 100) | round(1) }}<small>%</small></div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">完成局数</div>
+      <div class="stat-value">{{ data.myRank.sessions }}<small>局</small></div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<div class="card reveal">
+  <div class="card-title">
+    <h3>总榜 Top {{ data['items'] | length }}</h3>
+    <span class="hint">排序：最佳分数 ↓ → 平均正确率 ↓ → 最佳用时 ↑（用时不计入分数）</span>
+  </div>
+
+  {% if data['items'] %}
+  <div class="table-wrap">
+    <table class="data">
+      <thead>
+        <tr>
+          <th>名次</th><th>用户</th><th>最佳分数</th><th>平均分</th>
+          <th>平均正确率</th><th>局数</th><th>最佳用时</th>{% if reward_enabled %}<th>研习积分</th>{% endif %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in data['items'] %}
+        <tr>
+          <td><span class="rank-badge {% if row.rank <= 3 %}rank-{{ row.rank }}{% endif %}">{{ row.rank }}</span></td>
+          <td>
+            {{ row.displayName }}
+            {% if row.userId == current_user.id %}<span class="tag tag-gold" style="margin-left:6px">我</span>{% endif %}
+          </td>
+          <td class="num"><b>{{ row.bestScore }}</b></td>
+          <td class="num">{{ row.avgScore }}</td>
+          <td class="num">{{ (row.avgCorrectRate * 100) | round(1) }}%</td>
+          <td class="num">{{ row.sessions }}</td>
+          <td class="num">{{ row.bestDuration | duration }}</td>
+          {% if reward_enabled %}<td class="num">{{ row.studyPoints }}</td>{% endif %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty">
+    <strong>排行榜暂无数据</strong>
+    还没有任何用户完成竞答。完成一局后即可进入排行榜。
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

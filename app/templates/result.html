@@ -1,0 +1,240 @@
+{% extends "base.html" %}
+{% block title %}成绩结果{% endblock %}
+{% block page_heading %}成绩结果{% endblock %}
+{% block page_crumb %}{{ '超时自动提交' if result.timedOut else '已完成' }} · 口径 {{ result.ruleVersion }}{% endblock %}
+
+{% block content %}
+<section class="result-hero">
+  <div class="result-inner">
+    <div class="score-ring" style="--ring: {{ (result.score * 3.6) | round(1) }}deg">
+      <div>
+        <div class="value">{{ result.score }}</div>
+        <div class="unit">得分 / 100</div>
+      </div>
+    </div>
+    <div class="result-headline">
+      <h2>{{ '超时提交，已按已保存答案结算' if result.timedOut else '本次测评已完成' }}</h2>
+      <div class="grade">评级 · {{ result.gradeLabel }}</div>
+      <div class="formula">{{ result.explain }}</div>
+      <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap">
+        <a class="btn btn-gold" href="/dashboard">再来一局</a>
+        <a class="btn" href="/history">我的历史成绩</a>
+      </div>
+    </div>
+  </div>
+  <figure class="hero-figure">
+    <img src="/static/img/hero-desk.webp"
+         alt="手绘水彩风格的桌面插画：摊开的笔记本、钢笔与一小圈桂冠" />
+  </figure>
+</section>
+
+<div class="grid grid-4">
+  <div class="stat">
+    <div class="stat-label">正确 / 错误 / 未答</div>
+    <div class="stat-value">{{ result.correctCount }}<small>/ {{ result.wrongCount }} / {{ result.unansweredCount }}</small></div>
+    <div class="stat-foot">未作答按错误处理，计入分母</div>
+  </div>
+  <div class="stat">
+    <div class="stat-label">正确率</div>
+    <div class="stat-value">{{ (result.correctRate * 100) | round(1) }}<small>%</small></div>
+    <div class="stat-foot">全部题目为单项选择</div>
+  </div>
+  <div class="stat">
+    <div class="stat-label">用时</div>
+    <div class="stat-value">{{ result.durationSeconds | duration }}</div>
+    <div class="stat-foot">用时不影响得分，仅用于展示与排行排序</div>
+  </div>
+  <div class="stat">
+    <div class="stat-label">本局研习积分</div>
+    <div class="stat-value" id="sp-value">{{ result.spEarned if result.spEarned is not none else '—' }}<small>SP</small></div>
+    <div class="stat-foot">奖励为旁路，不影响分数与排名</div>
+  </div>
+</div>
+
+<div class="card" id="reward-card" style="display:none">
+  <div class="card-title"><h3>本次新解锁</h3><span class="hint">成就由服务端从终态会话派生</span></div>
+  <div id="reward-body" class="ach-grid"></div>
+</div>
+
+<div class="card reveal">
+  <div class="card-title">
+    <h3>逐题明细与解析</h3>
+    <span class="hint">
+      {% if rag_available %}
+      可对任意题目点击「生成资料增强解析」，系统会检索《南开校史讲义》等资料并标注来源
+      {% else %}
+      资料增强解析当前不可用，以下为题库标准解析
+      {% endif %}
+    </span>
+  </div>
+
+  {% for q in result.questions %}
+  <div class="detail-item reveal {{ 'correct' if q.isCorrect else 'wrong' }}" data-sq="{{ q.sessionQuestionId }}" style="--i: {{ loop.index0 % 6 }}">
+    <div class="detail-head">
+      <span class="tag">第 {{ q.orderNo }} 题</span>
+      <span class="tag">{{ q.qtypeLabel }}</span>
+      <span class="tag {{ 'tag-easy' if q.difficulty == 'EASY' else ('tag-medium' if q.difficulty == 'MEDIUM' else 'tag-hard') }}">{{ q.difficultyLabel }}</span>
+      {% if q.category %}<span class="tag">{{ q.category }}</span>{% endif %}
+      <span class="tag {{ 'tag-ok' if q.isCorrect else 'tag-danger' }}">{{ '答对' if q.isCorrect else '答错' }}</span>
+    </div>
+    <div class="detail-q">{{ q.content }}</div>
+
+    {% if q.qtype == 'BLANK' %}
+    {# 填空题：直接把「你写了什么、参考答案是什么、判分看哪几个词」三行摆出来，
+       判分宽松不等于判分不透明。 #}
+    <div class="answer-line">
+      <span class="k">你的作答</span>
+      <span class="{{ 'is-correct' if q.isCorrect else 'is-wrong' }}">{{ q.userAnswer or '未作答' }}</span>
+    </div>
+    <div class="answer-line">
+      <span class="k">参考答案</span>
+      <span class="is-correct">{{ q.correctAnswer }}</span>
+    </div>
+    <div class="answer-line">
+      <span class="k">判分要点</span>
+      <span>
+        答出任一关键词即算对：
+        {% for w in q.keywords %}<span class="kw-chip {{ 'is-hit' if w in q.matchedKeywords else '' }}">{{ w }}</span>{% endfor %}
+      </span>
+    </div>
+    {% else %}
+    {% for key, text in q.options.items() %}
+    {# 正确/错选改用类而不是行内颜色：浅色纸面下原来的 #8fd0b4 / #dd9a9a
+       对比度只有 1.8:1 和 2.4:1，等于没标。 #}
+    <div class="answer-line">
+      <span class="k">{{ key }} 选项</span>
+      <span class="{% if key == q.correctAnswer %}is-correct{% elif key == q.userAnswer %}is-wrong{% endif %}">
+        {{ text }}
+        {% if key == q.correctAnswer %}<b>· 正确答案</b>{% endif %}
+        {% if key == q.userAnswer and key != q.correctAnswer %}<b>· 你的选择</b>{% endif %}
+      </span>
+    </div>
+    {% endfor %}
+
+    <div class="answer-line">
+      <span class="k">你的作答</span>
+      <span>{{ q.userAnswer or '未作答' }}{% if q.userAnswer and q.options.get(q.userAnswer) %} · {{ q.options[q.userAnswer] }}{% endif %}</span>
+    </div>
+    {% endif %}
+
+    <div class="explain-box">
+      <div class="title">题库标准解析</div>
+      <div>{{ q.explanation or '（该题暂无解析）' }}</div>
+      {% if q.sourceTitle %}
+      <div class="hint-text" style="margin-top:8px">来源：《{{ q.sourceTitle }}{% if q.sourceSection %}》· {{ q.sourceSection }}{% endif %}</div>
+      {% endif %}
+    </div>
+
+    {% if rag_available %}
+    <div class="rag-box">
+      <button class="btn btn-sm rag-trigger" data-sq="{{ q.sessionQuestionId }}">生成资料增强解析</button>
+      <div class="rag-result"></div>
+    </div>
+    {% endif %}
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% import "_icons.html" as icons %}
+<script>
+  const SESSION_ID = {{ result.sessionId | tojson }};
+  const SCORE = {{ result.score }};
+
+  /* 成就名称取自数据库、图标取自 rewards.ACHIEVEMENT_ICONS，
+     由 Jinja 渲染后序列化给前端 —— 改名或换图标时不必再动这个模板。
+     （旧版把 8 个名称硬编码在这里，改一次名要改两处，必然漏。） */
+  const ACHIEVEMENT_META = {
+    {% for code, meta in achievement_meta.items() %}
+    {{ code | tojson }}: {
+      name: {{ meta.name | tojson }},
+      description: {{ meta.description | tojson }},
+      svg: {{ icons.ach_icon(meta.icon) | tojson }},
+    },
+    {% endfor %}
+  };
+
+  // 得分达标或解锁新成就时撒一次庆祝粒子（脚本失效/减少动效时自动跳过）
+  let shouldCelebrate = SCORE >= 85;
+
+  // 提交时返回的奖励信息只在跳转瞬间保留一次
+  try {
+    const cached = sessionStorage.getItem('qm_result_' + SESSION_ID);
+    if (cached) {
+      const payload = JSON.parse(cached);
+      const reward = payload.reward || {};
+      if (reward.spEarned !== null && reward.spEarned !== undefined) {
+        document.getElementById('sp-value').innerHTML = `${reward.spEarned}<small>SP</small>`;
+      }
+      if (reward.newlyUnlocked && reward.newlyUnlocked.length) {
+        // 成就卡逐张盖上来：每张错峰 110ms，图标带一次「盖章」下落
+        document.getElementById('reward-body').innerHTML = reward.newlyUnlocked
+          .map((code, index) => {
+            const meta = ACHIEVEMENT_META[code] || {};
+            return `<div class="ach unlocked is-new" style="--i:${index}">
+              <span class="ach-seal-ring" aria-hidden="true"></span>
+              <div class="ach-icon">${meta.svg || ''}</div>
+              <div class="ach-name">${escapeHtml(meta.name || code)}</div>
+              <div class="ach-desc">${escapeHtml(meta.description || '')}</div>
+            </div>`;
+          })
+          .join('');
+        document.getElementById('reward-card').style.display = 'block';
+        shouldCelebrate = true;
+      }
+      sessionStorage.removeItem('qm_result_' + SESSION_ID);
+    }
+  } catch (err) { /* 忽略解析失败 */ }
+
+  if (shouldCelebrate && window.QM) {
+    window.setTimeout(() => window.QM.celebrate(), 260);
+  }
+
+  // 便于展示与分享：带 ?rag=1 时自动展开第一题的「资料增强解析」
+  if (new URLSearchParams(location.search).get('rag') === '1') {
+    const firstTrigger = document.querySelector('.rag-trigger');
+    if (firstTrigger) window.setTimeout(() => firstTrigger.click(), 500);
+  }
+
+  document.addEventListener('click', async (event) => {
+    const trigger = event.target.closest('.rag-trigger');
+    if (!trigger) return;
+    const box = trigger.parentElement.querySelector('.rag-result');
+    const sqId = trigger.dataset.sq;
+    trigger.disabled = true;
+    trigger.textContent = '正在检索课程资料并生成解释…';
+    box.innerHTML = '';
+    try {
+      const data = await API.post('/api/rag/explanations', { sessionId: SESSION_ID, sessionQuestionId: sqId });
+      if (data.available) {
+        const cites = (data.citations || []).map((c, i) =>
+          `<div class="cite">来源 ${i + 1}：<em>${escapeHtml(c.documentTitle)}</em> / ${escapeHtml(c.sectionTitle)}</div>`
+        ).join('');
+        box.innerHTML = `
+          <div class="rag-body">
+            <div>${escapeHtml(data.explanation)}</div>
+            <div class="rag-cites">${cites}</div>
+            <div class="hint-text" style="margin-top:8px">
+              模型：${escapeHtml(data.model || '-')} · ${data.cached ? '命中缓存' : '本次生成'}
+            </div>
+          </div>`;
+        trigger.textContent = '重新生成';
+      } else {
+        box.innerHTML = `<div class="explain-box" style="margin-top:10px">
+          <div class="title">资料增强解析</div>
+          <div>${escapeHtml(data.message || '未检索到足够相关的课程资料，以下为题库标准解析')}</div>
+        </div>`;
+        trigger.textContent = '重试';
+      }
+    } catch (err) {
+      box.innerHTML = `<div class="explain-box" style="margin-top:10px">
+        <div class="title">资料增强解析</div>
+        <div>${escapeHtml(err.message)}（不影响本次成绩）</div>
+      </div>`;
+      trigger.textContent = '重试';
+    }
+    trigger.disabled = false;
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,29 @@
+# QuizMaster · 运行依赖（不使用 uv 时的等价安装方式）
+# ---------------------------------------------------------------------------
+# 有 uv（推荐，一键搞定）：
+#     uv sync
+#     uv run python run.py
+#
+# 没有 uv、只有 Python 3.11+：
+#     python -m venv .venv
+#     .venv\Scripts\python.exe -m pip install -r requirements.txt      # Windows
+#     .venv/bin/python -m pip install -r requirements.txt              # Linux / macOS
+#     .venv\Scripts\python.exe run.py
+#
+# 两个入口脚本（start.bat / start.sh）会自动判断：有 uv 走 uv，没有就退回 python + pip，
+# 两条路径装出来的依赖版本一致，功能完全等价。
+#
+# 下面锁定的版本是**实测通过**的那一组；约束范围见 pyproject.toml（单一事实源），
+# 需要逐字节复现的环境见 uv.lock。
+# 若某个版本在你的机器/平台上装不上，把 == 放宽成 >= 即可（例如 fastapi>=0.115.0）。
+# 国内网络慢时可加镜像：-i https://mirrors.aliyun.com/pypi/simple/
+fastapi==0.141.1
+uvicorn[standard]==0.53.0
+jinja2==3.1.6
+python-multipart==0.0.32
+httpx==0.28.1
+sqlalchemy==2.0.54
+itsdangerous==2.2.0
+
+# 以下只有「重新生成交付 PDF」时才需要，跑应用用不到：
+# markdown>=3.6

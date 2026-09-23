@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+{% include "_head.html" %}
+  <title>{% block title %}{{ app_name }}{% endblock %} · 南开校史知识竞答</title>
+</head>
+<body class="{% block body_class %}{% endblock %}">
+{% import "_icons.html" as icons %}
+<div class="layout">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">{{ icons.brand_mark() }}</div>
+      <div class="brand-text">
+        <strong>QuizMaster</strong>
+        <span>南开校史竞答</span>
+      </div>
+    </div>
+
+    {% if current_user %}
+    <nav class="nav" aria-label="主导航">
+      <div class="nav-group-label">学习</div>
+      <a class="nav-item {% if active_nav == 'dashboard' %}active{% endif %}" href="/dashboard"
+         {% if active_nav == 'dashboard' %}aria-current="page"{% endif %}>
+        <span class="nav-icon">{{ icons.nav_icon('dashboard') }}</span> 首页
+      </a>
+      <a class="nav-item {% if active_nav == 'knowledge' %}active{% endif %}" href="/knowledge"
+         data-tour="nav-knowledge"
+         {% if active_nav == 'knowledge' %}aria-current="page"{% endif %}>
+        <span class="nav-icon">{{ icons.nav_icon('knowledge') }}</span> 校史知识库
+      </a>
+      {% if active_nav == 'knowledge' %}
+      {# 章节目录：只在知识库这一页展开。
+         这些锚点指向的都是本页区块，放在别的页面上就是一组死链接，
+         所以默认完全不渲染，侧栏不会因此多出一排用不到的入口。 #}
+      <nav class="nav-sub" aria-label="校史知识库章节目录">
+        <a class="nav-sub-item" href="#timeline">时间轴</a>
+        <a class="nav-sub-item" href="#people">人物档案</a>
+        <a class="nav-sub-item" href="#emblems">文化标识</a>
+        <a class="nav-sub-item" href="#contrasts">易混淆辨析</a>
+        <a class="nav-sub-item" href="#cards">知识卡片</a>
+      </nav>
+      {% endif %}
+      <a class="nav-item {% if active_nav == 'history' %}active{% endif %}" href="/history"
+         {% if active_nav == 'history' %}aria-current="page"{% endif %}>
+        <span class="nav-icon">{{ icons.nav_icon('history') }}</span> 历史成绩
+      </a>
+      <a class="nav-item {% if active_nav == 'leaderboard' %}active{% endif %}" href="/leaderboard"
+         {% if active_nav == 'leaderboard' %}aria-current="page"{% endif %}>
+        <span class="nav-icon">{{ icons.nav_icon('leaderboard') }}</span> 排行榜
+      </a>
+      {% if reward_enabled %}
+      <a class="nav-item {% if active_nav == 'achievements' %}active{% endif %}" href="/achievements"
+         {% if active_nav == 'achievements' %}aria-current="page"{% endif %}>
+        <span class="nav-icon">{{ icons.nav_icon('achievements') }}</span> 成就荣誉墙
+      </a>
+      {% endif %}
+
+      {% if current_user.role == 'ADMIN' %}
+      <div class="nav-group-label">管理</div>
+      <a class="nav-item {% if active_nav == 'admin' %}active{% endif %}" href="/admin/questions"
+         {% if active_nav == 'admin' %}aria-current="page"{% endif %}>
+        <span class="nav-icon">{{ icons.nav_icon('admin') }}</span> 题库管理
+      </a>
+      <a class="nav-item {% if active_nav == 'admin_knowledge' %}active{% endif %}" href="/admin/knowledge"
+         {% if active_nav == 'admin_knowledge' %}aria-current="page"{% endif %}>
+        <span class="nav-icon">{{ icons.nav_icon('admin_knowledge') }}</span> 资料库与 RAG
+      </a>
+      {% endif %}
+    </nav>
+
+    {# 侧栏底部：只留研习进度（含经验条）。
+       人名、头像与退出登录已上移到顶栏右上角，这里再出现一次就是重复信息。
+       经验条在旧版是缺失的 —— 等级称号和 SP 都写了，唯独没有「离下一级还差多少」
+       这个唯一能推动行为的数字。 #}
+    <div class="sidebar-foot">
+      {% if reward_enabled and reward and reward.level %}
+      <div class="side-level">
+        <div class="side-level-top">
+          <span class="side-level-name">{{ reward.level.title }}</span>
+          <span class="side-level-sp">{{ reward.studyPoints }} SP</span>
+        </div>
+        <div class="track" role="progressbar" aria-valuemin="0" aria-valuemax="100"
+             aria-valuenow="{{ reward.level.progressPercent }}" aria-label="当前等级进度">
+          <i data-progress="{{ reward.level.progressPercent }}%" style="width:{{ reward.level.progressPercent }}%"></i>
+        </div>
+        <div class="side-level-hint">
+          {% if reward.level.isMaxLevel %}已达最高等级
+          {% else %}距「{{ reward.level.nextTitle }}」还差 {{ reward.level.pointsToNext }} SP{% endif %}
+          · 连续研习 {{ reward.currentStreak }} 天
+        </div>
+      </div>
+      {% else %}
+      <p class="hint-text">研习进度在开启奖励机制后显示。</p>
+      {% endif %}
+    </div>
+    {% else %}
+    <div class="sidebar-foot">
+      <p class="hint-text">请先登录后参与竞答。</p>
+      <a class="btn btn-gold btn-block" href="/login">前往登录</a>
+    </div>
+    {% endif %}
+  </aside>
+
+  <div class="main">
+    {% block topbar %}
+    <header class="topbar">
+      <div class="topbar-left">
+        <h1>{% block page_heading %}{{ app_name }}{% endblock %}</h1>
+        <div class="crumb">{% block page_crumb %}南开大学校史 · 在线知识竞答{% endblock %}</div>
+      </div>
+
+      <div class="topbar-user">
+        
+        {% if current_user %}
+        {# 用原生 <details> 做下拉：不依赖 JS 即可展开，键盘可达，
+           脚本失效时依旧能用 —— 比手写 menu 组件少一层故障面。 #}
+        <details class="user-menu" id="user-menu" data-tour="account-menu">
+          <summary aria-label="账户菜单">
+            <span class="avatar">{{ (current_user.display_name or current_user.username)[:1] }}</span>
+            <span class="user-name">{{ current_user.display_name or current_user.username }}</span>
+            <span class="user-caret">{{ icons.nav_icon('chevron') }}</span>
+          </summary>
+          <div class="user-panel">
+            <div class="user-panel-head">
+              <span class="avatar">{{ (current_user.display_name or current_user.username)[:1] }}</span>
+              <div>
+                <strong>{{ current_user.display_name or current_user.username }}</strong>
+                <span>
+                  {% if reward and reward.level %}{{ reward.level.title }} · {{ reward.studyPoints }} SP
+                  {% else %}{{ '管理员' if current_user.role == 'ADMIN' else '同学' }}{% endif %}
+                </span>
+              </div>
+            </div>
+
+            {% if reward_enabled and reward and reward.level %}
+            <div class="user-panel-level">
+              <div class="side-level-top">
+                <span class="side-level-name">等级进度</span>
+                <span class="side-level-sp">{{ reward.level.progressPercent }}%</span>
+              </div>
+              <div class="track">
+                <i data-progress="{{ reward.level.progressPercent }}%" style="width:{{ reward.level.progressPercent }}%"></i>
+              </div>
+              <div class="side-level-hint">
+                {% if reward.level.isMaxLevel %}已达最高等级
+                {% else %}距「{{ reward.level.nextTitle }}」还差 {{ reward.level.pointsToNext }} SP{% endif %}
+                · 成就 {{ reward.unlockedCount }}/{{ reward.totalAchievements }}
+              </div>
+            </div>
+            {% endif %}
+
+            {# 下拉面板只放「账号信息 + 等级进度 + 重看指引 + 退出登录」。
+               成就墙 / 历史成绩 / 排行榜在左侧主导航里已经有了，
+               同一组入口在一屏内出现两次，只会让人以为是两个不同的页面。
+
+               「新手指引」默认 hidden：脚本跑起来才由 tour.js 显形。
+               无脚本时它点了不会有反应，与其留个死控件，不如不出现。 #}
+            <div class="user-panel-links">
+              <button type="button" data-action="tour-start" hidden>新手指引</button>
+              <button type="button" data-action="logout">退出登录</button>
+            </div>
+          </div>
+        </details>
+        {% else %}
+        <a class="btn btn-sm btn-gold" href="/login">登录</a>
+        {% endif %}
+      </div>
+    </header>
+    {% endblock %}
+
+    <main class="content">
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+</div>
+
+<script src="/static/js/app.js"></script>
+{# 新手指引的步骤数据与覆盖层由服务端渲染（见 _tour.html），
+   tour.js 只做高亮定位与键盘交互，加载失败也不影响页面本身。 #}
+{% include "_tour.html" %}
+<script src="/static/js/tour.js"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

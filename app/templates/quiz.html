@@ -1,0 +1,433 @@
+{% extends "base.html" %}
+{% block title %}答题中{% endblock %}
+{% block page_heading %}在线答题{% endblock %}
+{% block page_crumb %}{{ session.questionCount }} 题 · 每题 {{ session.perQuestionSeconds }} 秒 · 服务端计时{% endblock %}
+
+{% block content %}
+<div class="quiz-head reveal">
+  <div>
+    <span class="tag">第 <b id="current-index">1</b> / {{ session.questionCount }} 题</span>
+    {% if session.categoryFilter %}<span class="tag">已按分类筛选</span>{% endif %}
+    {% if session.difficultyFilter %}<span class="tag">{{ session.difficultyFilter | difficulty_label }}</span>{% endif %}
+  </div>
+  <div class="timer" id="timer">--:--</div>
+</div>
+
+<div class="progress-track"><div class="progress-fill" id="progress"></div></div>
+
+<div class="q-layout reveal">
+  <div>
+    <div class="q-card">
+      <div class="q-meta">
+        <div class="q-index"><span id="q-order">1</span><small>/{{ session.questionCount }}</small></div>
+        <span class="tag" id="q-type">—</span>
+        <span class="tag" id="q-difficulty">—</span>
+        <span class="tag" id="q-category">—</span>
+      </div>
+      <div class="q-content" id="q-content">正在加载题目…</div>
+      <div class="options" id="q-options"></div>
+
+      <div class="q-actions">
+        <button class="btn" id="prev-btn">上一题</button>
+        <div style="display:flex;gap:10px">
+          <button class="btn" id="next-btn">下一题</button>
+          <button class="btn btn-gold" id="submit-btn">提交并结算</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <aside class="q-side">
+    <div class="card">
+      <div class="card-title"><h3>答题进度</h3></div>
+      <div class="q-grid" id="q-grid"></div>
+      <p class="hint-text" style="margin:12px 0 0" id="answered-hint">已作答 0 / {{ session.questionCount }}</p>
+      <p class="hint-text" style="margin:10px 0 0" id="save-hint">单选与判断题：点选即自动保存。填空题：输入后按回车或点击「保存本题」。</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><h3>键盘快捷键</h3></div>
+      <ul class="kbd-list">
+        <li>
+          <span class="kbd-group"><kbd>A</kbd><kbd>B</kbd><kbd>C</kbd><kbd>D</kbd></span>
+          <span>选中对应选项</span>
+        </li>
+        <li>
+          <span class="kbd-group"><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd><kbd>4</kbd></span>
+          <span>按序号选中</span>
+        </li>
+        <li>
+          <span class="kbd-group"><kbd>←</kbd><kbd>→</kbd></span>
+          <span>上一题 / 下一题</span>
+        </li>
+        <li>
+          <span class="kbd-group"><kbd>Enter</kbd></span>
+          <span>进入下一题</span>
+        </li>
+      </ul>
+      <p class="hint-text" style="margin:12px 0 0">填空题请在输入框内作答：按 <kbd>Enter</kbd> 保存并进入下一题。光标在输入框内时，上面的选项快捷键自动让位给打字。</p>
+    </div>
+  </aside>
+</div>
+
+{# 切题结果通过 aria-live 播报，屏幕阅读器用户不必逐字重读整张卡片 #}
+<p class="sr-only" id="q-live" aria-live="polite"></p>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const SESSION = {{ session.questions | tojson }};
+  const SESSION_ID = {{ session.sessionId | tojson }};
+  const EXPIRES_AT = new Date({{ session.expiresAt | tojson }} + 'Z').getTime();
+  let clockOffset = Date.now() - new Date({{ session.serverTime | tojson }} + 'Z').getTime();
+
+  const answers = {};
+  SESSION.forEach((q) => { if (q.selected) answers[q.sessionQuestionId] = q.selected; });
+
+  let index = 0;
+  let submitting = false;
+
+  const els = {
+    order: document.getElementById('q-order'),
+    content: document.getElementById('q-content'),
+    options: document.getElementById('q-options'),
+    type: document.getElementById('q-type'),
+    difficulty: document.getElementById('q-difficulty'),
+    category: document.getElementById('q-category'),
+    grid: document.getElementById('q-grid'),
+    progress: document.getElementById('progress'),
+    timer: document.getElementById('timer'),
+    currentIndex: document.getElementById('current-index'),
+    answeredHint: document.getElementById('answered-hint'),
+    live: document.getElementById('q-live'),
+  };
+
+  const TYPE_LABELS = { SINGLE: '单选题', JUDGE: '判断题', BLANK: '填空题' };
+  const DIFF_LABELS = { EASY: '简单', MEDIUM: '中等', HARD: '困难' };
+
+  // 选项序号 ↔ 字母：由选项自身决定，不硬编码 A/B/C/D。
+  // 填空题没有选项，返回空数组 —— 于是 A–D / 1–4 快捷键对它自然失效。
+  function optionKeys() { return Object.keys(SESSION[index].options); }
+
+  /* 动画开关：与 app.js 共用同一条退化路径（脚本失效 / 减少动效 / 放映模式）。
+     typeof 兜住 app.js 加载失败的情况，避免本页脚本因此整段中断。 */
+  const MOTION_ON = (typeof NO_MOTION !== 'undefined') && !NO_MOTION;
+
+  /* 切题时给题卡一次横向推入。整块内容瞬间替换的话，眼睛要重新找一遍位置；
+     给一个 420ms 的方向感，视线能顺着「上一题 → 下一题」的动线走。 */
+  function flashAdvance() {
+    if (!MOTION_ON) return;
+    const card = document.querySelector('.q-card');
+    if (!card) return;
+    card.classList.remove('is-advancing');
+    void card.offsetWidth;          // 强制回流，让同一个动画可以重复触发
+    card.classList.add('is-advancing');
+    window.setTimeout(() => card.classList.remove('is-advancing'), 700);
+  }
+
+  function announce(extra) {
+    if (!els.live) return;
+    els.live.textContent =
+      `第 ${index + 1} 题，共 ${SESSION.length} 题。${extra || ''}`;
+  }
+
+  function renderGrid() {
+    els.grid.innerHTML = SESSION.map((q, i) => {
+      const cls = ['q-dot'];
+      const chosen = answers[q.sessionQuestionId];
+      if (chosen) cls.push('answered');
+      if (i === index) cls.push('current');
+      const state = `${chosen ? '已作答' : '未作答'}${i === index ? '，当前题' : ''}`;
+      return `<button class="${cls.join(' ')}" data-goto="${i}" aria-label="第 ${i + 1} 题，${state}"` +
+             `${i === index ? ' aria-current="true"' : ''}>${i + 1}</button>`;
+    }).join('');
+    const answered = Object.keys(answers).length;
+    els.answeredHint.textContent = `已作答 ${answered} / ${SESSION.length}`;
+    els.progress.style.width = `${(answered / SESSION.length) * 100}%`;
+  }
+
+  function renderOptions(q, selected) {
+    // 判断题只有「正确 / 错误」两项，横排比竖排更好按
+    els.options.classList.toggle('is-judge', q.qtype === 'JUDGE');
+    els.options.innerHTML = Object.entries(q.options).map(([key, text], i) => `
+      <button class="option ${selected === key ? 'selected' : ''}" data-key="${key}"
+              aria-pressed="${selected === key}" aria-keyshortcuts="${key} ${i + 1}"
+              title="快捷键：${key} 或 ${i + 1}">
+        <span class="option-key">${key}</span>
+        <span>${escapeHtml(text)}</span>
+      </button>
+    `).join('');
+  }
+
+  /* 填空题：输入框只在「换到另一道填空题」时才重建，否则每次 render 都会
+     抹掉用户正在打的字。焦点在框内时，A–D / 1–4 快捷键由全局处理器的
+     tagName 判断自动让位。 */
+  let blankRenderedFor = null;
+
+  function renderBlank(q, selected) {
+    els.options.classList.remove('is-judge');
+    if (blankRenderedFor !== q.sessionQuestionId) {
+      blankRenderedFor = q.sessionQuestionId;
+      els.options.innerHTML = `
+        <div class="blank-answer">
+          <label class="blank-label" for="blank-input">你的答案</label>
+          <input id="blank-input" class="blank-input" type="text" maxlength="60"
+                 autocomplete="off" spellcheck="false"
+                 placeholder="填出要点即可，不必与标准答案完全一致" />
+          <div class="blank-actions">
+            <button class="btn btn-gold btn-sm" id="blank-save" type="button">保存本题</button>
+            <span class="hint-text" id="blank-status"></span>
+          </div>
+        </div>`;
+      const input = document.getElementById('blank-input');
+      input.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          saveBlank(input.value, true);
+        }
+      });
+      // 失焦即保存：点「下一题」「提交」或答题卡跳题时都不会丢答案
+      input.addEventListener('blur', () => { saveBlank(input.value, false); });
+      document.getElementById('blank-save').addEventListener('click', () => {
+        saveBlank(document.getElementById('blank-input').value, false);
+      });
+    }
+    const input = document.getElementById('blank-input');
+    if (input && document.activeElement !== input) {
+      input.value = selected || '';
+    }
+    updateBlankStatus(selected);
+  }
+
+  function updateBlankStatus(selected, state) {
+    const box = document.getElementById('blank-status');
+    if (!box) return;
+    if (state === 'saving') { box.textContent = '正在保存…'; return; }
+    if (state === 'error') { box.textContent = '保存失败，请重试'; return; }
+    if (!selected) { box.textContent = '尚未作答'; return; }
+    box.textContent = state === 'saved' ? '已保存' : `已保存（${selected.length} 字）`;
+  }
+
+  function render() {
+    const q = SESSION[index];
+    els.order.textContent = index + 1;
+    els.currentIndex.textContent = index + 1;
+    els.content.textContent = q.content;
+    els.type.textContent = TYPE_LABELS[q.qtype] || '单选题';
+    els.difficulty.textContent = DIFF_LABELS[q.difficulty] || q.difficulty;
+    els.category.textContent = q.category || '未分类';
+
+    const selected = answers[q.sessionQuestionId];
+    if (q.qtype === 'BLANK') {
+      renderBlank(q, selected);
+    } else {
+      blankRenderedFor = null;
+      renderOptions(q, selected);
+    }
+
+    document.getElementById('prev-btn').disabled = index === 0;
+    document.getElementById('next-btn').disabled = index === SESSION.length - 1;
+    renderGrid();
+  }
+
+  /* 填空题保存。thenNext=true 表示「保存完就去下一题」（回车 / 失焦跳题）。 */
+  async function saveBlank(value, thenNext) {
+    const q = SESSION[index];
+    if (!q || q.qtype !== 'BLANK') return;
+    const text = (value || '').trim();
+    const previous = answers[q.sessionQuestionId];
+
+    if (!text) {
+      // 清空输入框 = 撤回作答
+      if (previous) { delete answers[q.sessionQuestionId]; }
+      updateBlankStatus('');
+      renderGrid();
+      if (thenNext) goTo(index + 1);
+      return;
+    }
+    if (text === previous) {
+      updateBlankStatus(text);
+      if (thenNext) goTo(index + 1);
+      return;
+    }
+
+    answers[q.sessionQuestionId] = text;
+    updateBlankStatus(text, 'saving');
+    renderGrid();
+    try {
+      await API.put(
+        `/api/quiz/sessions/${SESSION_ID}/answers/${q.sessionQuestionId}`,
+        { answer: text }
+      );
+      updateBlankStatus(text, 'saved');
+      if (thenNext) goTo(index + 1);
+    } catch (err) {
+      if (previous) { answers[q.sessionQuestionId] = previous; }
+      else { delete answers[q.sessionQuestionId]; }
+      updateBlankStatus(previous, 'error');
+      renderGrid();
+      toast(err.message, 'err');
+      if (err.code === 'SESSION_EXPIRED' || err.code === 'SESSION_FINISHED') {
+        await submit(true);
+      }
+    }
+  }
+
+  async function choose(key) {
+    const q = SESSION[index];
+    const previous = answers[q.sessionQuestionId];
+    answers[q.sessionQuestionId] = key;
+    render();
+    try {
+      await API.put(`/api/quiz/sessions/${SESSION_ID}/answers/${q.sessionQuestionId}`, { answer: key });
+    } catch (err) {
+      if (previous) { answers[q.sessionQuestionId] = previous; } else { delete answers[q.sessionQuestionId]; }
+      render();
+      toast(err.message, 'err');
+      if (err.code === 'SESSION_EXPIRED' || err.code === 'SESSION_FINISHED') {
+        await submit(true);
+      }
+    }
+  }
+
+  async function submit(auto = false) {
+    if (submitting) return;
+    // 提交前先把当前填空题框里还没落库的内容补一次：
+    // 用户可能刚打完字就直接点「提交」，此时 blur 触发的保存可能还在路上。
+    const pendingInput = document.getElementById('blank-input');
+    const currentQ = SESSION[index];
+    if (pendingInput && currentQ && currentQ.qtype === 'BLANK') {
+      const text = (pendingInput.value || '').trim();
+      if (text && text !== answers[currentQ.sessionQuestionId]) {
+        try {
+          await API.put(
+            `/api/quiz/sessions/${SESSION_ID}/answers/${currentQ.sessionQuestionId}`,
+            { answer: text }
+          );
+          answers[currentQ.sessionQuestionId] = text;
+        } catch (err) { /* 保存失败不阻断提交，下面提交时服务端会再校一次 */ }
+      }
+    }
+    submitting = true;
+    const unanswered = SESSION.length - Object.keys(answers).length;
+    if (!auto && unanswered > 0) {
+      const okToGo = window.confirm(`还有 ${unanswered} 道题未作答，未作答题将按错误计分。确认提交？`);
+      if (!okToGo) { submitting = false; return; }
+    }
+    const button = document.getElementById('submit-btn');
+    button.disabled = true;
+    button.textContent = '正在判分…';
+
+    /* 提交与超时自动提交都走这里：题卡先「合上」、进度条扫过一道光，
+       再跳转到结果页 —— 让「这一局结束了」有明确的收束，而不是页面突然消失。
+       整段最多等 460ms。 */
+    const card = document.querySelector('.q-card');
+    const track = document.querySelector('.progress-track');
+    const startedAt = performance.now();
+    if (MOTION_ON && card) {
+      card.classList.add('is-submitting');
+      if (track) track.classList.add('is-done');
+    }
+
+    try {
+      const result = await API.post(`/api/quiz/sessions/${SESSION_ID}/submit`, {});
+      sessionStorage.setItem('qm_result_' + SESSION_ID, JSON.stringify(result));
+      if (MOTION_ON && card) {
+        const wait = 460 - (performance.now() - startedAt);
+        if (wait > 0) await new Promise((resolve) => window.setTimeout(resolve, wait));
+      }
+      window.location.href = '/result/' + SESSION_ID;
+    } catch (err) {
+      // 提交失败时把收束动画撤掉，页面必须回到「可以继续作答」的状态
+      if (card) card.classList.remove('is-submitting');
+      if (track) track.classList.remove('is-done');
+      toast(err.message, 'err');
+      button.disabled = false;
+      button.textContent = '提交并结算';
+      submitting = false;
+    }
+  }
+
+  function tick() {
+    const left = Math.max(0, Math.floor((EXPIRES_AT - (Date.now() - clockOffset)) / 1000));
+    els.timer.textContent = formatDuration(left);
+    els.timer.classList.toggle('warn', left <= 60 && left > 15);
+    els.timer.classList.toggle('danger', left <= 15);
+    // 最后 10 秒换成更急促的心跳，把「快没时间了」推到余光里
+    els.timer.classList.toggle('is-critical', left <= 10 && left > 0);
+    if (left <= 0 && !submitting) {
+      toast('时间已到，正在自动提交…', 'info');
+      submit(true);
+    }
+  }
+
+  document.addEventListener('click', (event) => {
+    const option = event.target.closest('.option');
+    if (option) { choose(option.dataset.key); return; }
+    const dot = event.target.closest('[data-goto]');
+    if (dot) { goTo(Number(dot.dataset.goto)); }
+  });
+
+  // 切题统一走这里：只有真正换了题才播报，避免初始渲染就念一遍
+  function goTo(next) {
+    const target = Math.max(0, Math.min(SESSION.length - 1, next));
+    if (target === index) return;
+    index = target;
+    flashAdvance();
+    render();
+    announce();
+  }
+
+  document.getElementById('prev-btn').addEventListener('click', () => goTo(index - 1));
+  document.getElementById('next-btn').addEventListener('click', () => goTo(index + 1));
+  document.getElementById('submit-btn').addEventListener('click', () => submit(false));
+
+  // ---- 键盘操作：A–D / 1–4 选选项，← → 切题，Enter 下一题 ----
+  document.addEventListener('keydown', (event) => {
+    if (event.metaKey || event.ctrlKey || event.altKey) return;
+    const target = event.target;
+    if (target && (target.isContentEditable ||
+        ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName))) return;
+
+    const keys = optionKeys();
+
+    // 数字键按「选项顺序」映射，不假设选项一定叫 A/B/C/D
+    if (/^[1-9]$/.test(event.key)) {
+      const pick = keys[Number(event.key) - 1];
+      if (pick) { event.preventDefault(); choose(pick); }
+      return;
+    }
+
+    const letter = event.key.toUpperCase();
+    if (letter.length === 1 && keys.includes(letter)) {
+      event.preventDefault();
+      choose(letter);
+      return;
+    }
+
+    if (event.key === 'ArrowLeft') { event.preventDefault(); goTo(index - 1); return; }
+    if (event.key === 'ArrowRight') { event.preventDefault(); goTo(index + 1); return; }
+
+    if (event.key === 'Enter') {
+      // 焦点已在按钮/链接上时交给元素自身的 click，
+      // 否则「按 Enter 激活按钮」和「按 Enter 跳下一题」会各触发一次。
+      if (target && target.closest('button, a')) return;
+      event.preventDefault();
+      goTo(index + 1);
+    }
+  });
+
+  // 每 30 秒与服务端校准一次时间，避免客户端时钟被篡改
+  setInterval(async () => {
+    try {
+      const data = await API.get(`/api/quiz/sessions/${SESSION_ID}`);
+      if (data.status !== 'IN_PROGRESS') { await submit(true); return; }
+      clockOffset = Date.now() - new Date(data.serverTime + 'Z').getTime();
+    } catch (err) { /* 校准失败不打断答题 */ }
+  }, 30000);
+
+  setInterval(tick, 1000);
+  tick();
+  render();
+</script>
+{% endblock %}
